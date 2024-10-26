@@ -66,7 +66,7 @@ const run = async (input: Input) => {
   const ref = `refs/heads/${input.branchPrefix}${input.branch}`;
 
   try {
-    octokit.rest.git.createRef({
+    await octokit.rest.git.createRef({
       owner: input.owner,
       repo: input.repo,
       ref: ref,
@@ -98,7 +98,7 @@ const run = async (input: Input) => {
       message: input.message,
       tree: ref.data.object.sha,
     });
-    octokit.rest.git.updateRef({
+    await octokit.rest.git.updateRef({
       owner: input.owner,
       repo: input.repo,
       ref: historyRef,
@@ -116,7 +116,7 @@ const run = async (input: Input) => {
       message: input.message,
       tree: rootTree,
     });
-    octokit.rest.git.createRef({
+    await octokit.rest.git.createRef({
       owner: input.owner,
       repo: input.repo,
       ref: historyRef,

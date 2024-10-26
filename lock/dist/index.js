@@ -30027,7 +30027,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     });
     const ref = `refs/heads/${input.branchPrefix}${input.branch}`;
     try {
-        octokit.rest.git.createRef({
+        yield octokit.rest.git.createRef({
             owner: input.owner,
             repo: input.repo,
             ref: ref,
@@ -30059,7 +30059,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
             message: input.message,
             tree: ref.data.object.sha,
         });
-        octokit.rest.git.updateRef({
+        yield octokit.rest.git.updateRef({
             owner: input.owner,
             repo: input.repo,
             ref: historyRef,
@@ -30077,7 +30077,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
             message: input.message,
             tree: rootTree,
         });
-        octokit.rest.git.createRef({
+        yield octokit.rest.git.createRef({
             owner: input.owner,
             repo: input.repo,
             ref: historyRef,
