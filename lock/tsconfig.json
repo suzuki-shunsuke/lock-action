@@ -5,9 +5,17 @@
     "outDir": "./lib",
     "rootDir": "./src",
     "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
-    "lib": ["ES2021.String"]
+    "lib": [
+      "ES2021.String"
+    ]
   },
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts"
+  ]
 }

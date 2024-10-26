@@ -30027,7 +30027,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         metadata.pull_request_number = github.context.payload.pull_request.number;
         metadata.pull_request_url = `${github.context.serverUrl}/${input.owner}/${input.repo}/pull/${github.context.payload.pull_request.number}`;
     }
-    const msg = JSON.stringify(metadata);
+    const msg = JSON.stringify(metadata, null, "  ");
     const commit = yield octokit.rest.git.createCommit({
         owner: input.owner,
         repo: input.repo,

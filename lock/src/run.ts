@@ -66,7 +66,7 @@ const run = async (input: Input) => {
     metadata.pull_request_number = github.context.payload.pull_request.number;
     metadata.pull_request_url = `${github.context.serverUrl}/${input.owner}/${input.repo}/pull/${github.context.payload.pull_request.number}`;
   }
-  const msg = JSON.stringify(metadata);
+  const msg = JSON.stringify(metadata, null, "  ");
 
   const commit = await octokit.rest.git.createCommit({
     owner: input.owner,
