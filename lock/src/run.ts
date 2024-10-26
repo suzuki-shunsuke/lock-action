@@ -99,9 +99,9 @@ const run = async (input: Input) => {
       sha: newHistoryCommit.data.sha,
     });
   } catch (error: unknown) {
-    // if (!(error instanceof RequestError && error.status === 404)) {
-    throw error;
-    // }
+    if (!(error instanceof RequestError && error.status === 404 && error.message === "Not Found")) {
+      throw error;
+    }
 
     // If the history branch doesn't exist, create it
     const newHistoryCommit = await octokit.rest.git.createCommit({

@@ -30061,9 +30061,9 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        // if (!(error instanceof RequestError && error.status === 404)) {
-        throw error;
-        // }
+        if (!(error instanceof request_error_1.RequestError && error.status === 404 && error.message === "Not Found")) {
+            throw error;
+        }
         // If the history branch doesn't exist, create it
         const newHistoryCommit = yield octokit.rest.git.createCommit({
             owner: input.owner,
