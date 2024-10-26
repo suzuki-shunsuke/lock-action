@@ -3,7 +3,8 @@ import * as github from "@actions/github";
 import * as exec from "@actions/exec";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/core";
-import { RequestError } from "@octokit/request-error";
+// import { RequestError } from "@octokit/request-error";
+import { RequestError } from "octokit";
 import * as path from "path";
 
 type Input = {

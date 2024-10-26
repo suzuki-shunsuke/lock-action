@@ -6,7 +6,8 @@
     "@actions/core": "1.11.1",
     "@actions/github": "^6.0.0",
     "@octokit/plugin-paginate-graphql": "^5.2.4",
-    "@octokit/request-error": "^6.1.5"
+    "@octokit/request-error": "^6.1.5",
+    "octokit": "^4.0.2"
   },
   "devDependencies": {
     "@types/node": "20.16.13",
