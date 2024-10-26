@@ -30027,6 +30027,12 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     });
     const ref = `refs/heads/${input.branchPrefix}${input.branch}`;
     try {
+        octokit.rest.git.createRef({
+            owner: input.owner,
+            repo: input.repo,
+            ref: ref,
+            sha: commit.data.sha,
+        });
     }
     catch (error) {
         if (!(error instanceof request_error_1.RequestError && error.status === 422 && error.message === "Reference already exists")) {

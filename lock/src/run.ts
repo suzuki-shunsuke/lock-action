@@ -66,6 +66,12 @@ const run = async (input: Input) => {
   const ref = `refs/heads/${input.branchPrefix}${input.branch}`;
 
   try {
+    octokit.rest.git.createRef({
+      owner: input.owner,
+      repo: input.repo,
+      ref: ref,
+      sha: commit.data.sha,
+    });
   } catch (error: unknown) {
     if (!(error instanceof RequestError && error.status === 422 && error.message === "Reference already exists")) {
       // If it fails to create the branch, it fails
