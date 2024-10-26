@@ -34,11 +34,18 @@ export const main = async () => {
 const run = async (input: Input) => {
   // Create the remote branch
   const octokit = github.getOctokit(input.githubToken);
+
+  const parent = await octokit.rest.git.getCommit({
+    owner: input.owner,
+    repo: input.repo,
+    commit_sha: input.sha,
+  });
+
   const commit = await octokit.rest.git.createCommit({
     owner: input.owner,
     repo: input.repo,
     message: input.message,
-    tree: input.sha,
+    tree: parent.data.tree.sha,
   });
 
   const ref = `refs/heads/${input.branch}`;
