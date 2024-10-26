@@ -77,6 +77,8 @@ const run = async (input: Input) => {
   } catch (error: any) {
     console.log(typeof error);
     console.log(error);
+    console.log("error status", error.status);
+    console.log("error message", error.message);
     // if (!(error instanceof RequestError && error.status === 422 && error.message === "Reference already exists")) {
     if (!(error.status === 422 && error.message === "Reference already exists")) {
       // If it fails to create the branch, it fails
