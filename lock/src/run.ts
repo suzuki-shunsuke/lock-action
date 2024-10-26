@@ -11,6 +11,7 @@ type Input = {
   owner: string;
   repo: string;
   message: string;
+  sha: string;
 };
 
 type Issue = {
@@ -26,6 +27,7 @@ export const main = async () => {
     owner: core.getInput("repo_owner") || process.env.GITHUB_REPOSITORY_OWNER || "",
     repo: core.getInput("repo_name") || (process.env.GITHUB_REPOSITORY || "").split("/")[1],
     message: core.getInput("message"),
+    sha: core.getInput("sha") || process.env.GITHUB_SHA || "",
   });
 };
 
@@ -36,7 +38,7 @@ const run = async (input: Input) => {
     owner: input.owner,
     repo: input.repo,
     message: input.message,
-    tree: "",
+    tree: input.sha,
   });
 
   const ref = `refs/heads/${input.branch}`;

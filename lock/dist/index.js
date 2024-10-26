@@ -29996,6 +29996,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         owner: core.getInput("repo_owner") || process.env.GITHUB_REPOSITORY_OWNER || "",
         repo: core.getInput("repo_name") || (process.env.GITHUB_REPOSITORY || "").split("/")[1],
         message: core.getInput("message"),
+        sha: core.getInput("sha") || process.env.GITHUB_SHA || "",
     });
 });
 exports.main = main;
@@ -30006,7 +30007,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         owner: input.owner,
         repo: input.repo,
         message: input.message,
-        tree: "",
+        tree: input.sha,
     });
     const ref = `refs/heads/${input.branch}`;
     octokit.rest.git.createRef({
