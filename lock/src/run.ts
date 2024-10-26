@@ -64,7 +64,8 @@ const run = async (input: Input) => {
     tree: rootTree,
   });
 
-  const ref = `refs/heads/${input.branchPrefix}${input.branch}`;
+  const branch = `${input.branchPrefix}${input.branch}`;
+  const ref = `refs/heads/${branch}`;
 
   try {
     await octokit.rest.git.createRef({
@@ -73,24 +74,18 @@ const run = async (input: Input) => {
       ref: ref,
       sha: commit.data.sha,
     });
-    // } catch (error: unknown) {
-  } catch (error: any) {
-    console.log(typeof error);
-    console.log(error);
-    console.log("error status", error.status);
-    console.log("error message", error.message);
-    // if (!(error instanceof RequestError && error.status === 422 && error.message === "Reference already exists")) {
+  } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
     if (!(error.status === 422 && error.message.includes("Reference already exists"))) {
       // If it fails to create the branch, it fails
-      console.log("throw error");
       throw error;
     }
-    console.log("the key is already locked");
+    core.notice("the key is already locked");
     // If the remote branch has already existed, the key is being locked
     core.setOutput("already_locked", true);
     return;
   }
   core.setOutput("already_locked", false);
+  core.info(`The branch ${branch} has been created`);
 
   const historyRef = `refs/heads/${input.historyBranchPrefix}${input.branch}`;
   try {
@@ -113,8 +108,9 @@ const run = async (input: Input) => {
       ref: historyRef,
       sha: newHistoryCommit.data.sha,
     });
-  } catch (error: unknown) {
-    if (!(error instanceof RequestError)) { // && error.status === 404 && error.message === "Not Found")) {
+    core.info(`The branch ${historyRef} has been updated`);
+  } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
+    if (!(error.status === 404 && error.message.includes("Not Found"))) {
       throw error;
     }
 
@@ -131,6 +127,7 @@ const run = async (input: Input) => {
       ref: historyRef,
       sha: commit.data.sha,
     });
+    core.info(`The branch ${historyRef} has been created`);
     return;
   }
 }
