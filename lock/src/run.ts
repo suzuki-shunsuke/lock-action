@@ -58,12 +58,17 @@ const run = async (input: Input) => {
 
   const ref = `refs/heads/${input.branch}`;
 
-  octokit.rest.git.createRef({
-    owner: input.owner,
-    repo: input.repo,
-    ref,
-    sha: commit.data.sha,
-  });
+  try {
+    octokit.rest.git.createRef({
+      owner: input.owner,
+      repo: input.repo,
+      ref,
+      sha: commit.data.sha,
+    });
+  } catch (error: any) {
+    console.log(error);
+  }
+
 
   // If the remote branch has already existed, the key is being locked
   // If it fails to create the branch, it fails
