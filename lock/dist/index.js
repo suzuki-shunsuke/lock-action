@@ -30004,36 +30004,24 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
 exports.main = main;
 const rootTree = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"; // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
 const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
-    // Create the remote branch
     const octokit = github.getOctokit(input.githubToken);
-    // const tree = await octokit.rest.git.createTree({
-    //   owner: input.owner,
-    //   repo: input.repo,
-    //   tree: [],
-    // });
-    // const parent = await octokit.rest.git.getCommit({
-    //   owner: input.owner,
-    //   repo: input.repo,
-    //   commit_sha: input.sha,
-    // });
     const metadata = {
         message: input.message,
         status: "lock",
         actor: github.context.actor,
         github_actions_workflow_run_url: `${github.context.serverUrl}/${input.owner}/${input.repo}/actions/runs/${github.context.runId}`,
-        event: github.context.payload,
     };
     if (github.context.payload.pull_request) {
         metadata.pull_request_number = github.context.payload.pull_request.number;
         metadata.pull_request_url = `${github.context.serverUrl}/${input.owner}/${input.repo}/pull/${github.context.payload.pull_request.number}`;
+        metadata.github_actions_workflow_run_url += `?pr=${metadata.pull_request_number}`;
     }
+    metadata.event = github.context.payload;
     const msg = JSON.stringify(metadata, null, "  ");
     const commit = yield octokit.rest.git.createCommit({
         owner: input.owner,
         repo: input.repo,
         message: msg,
-        // tree: parent.data.tree.sha,
-        // tree: tree.data.sha,
         tree: rootTree,
     });
     const branch = `${input.branchPrefix}${input.branch}`;
@@ -30048,7 +30036,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
         if (!(error.status === 422 && error.message.includes("Reference already exists"))) {
-            // If it fails to create the branch, it fails
+            core.error(`failed to create a branch ${branch}: ${error.message}`);
             throw error;
         }
         core.notice("the key is already locked");
@@ -30058,7 +30046,8 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     }
     core.setOutput("already_locked", false);
     core.info(`The branch ${branch} has been created`);
-    const historyRef = `refs/heads/${input.historyBranchPrefix}${input.branch}`;
+    const historyBranch = `${input.historyBranchPrefix}${input.branch}`;
+    const historyRef = `refs/heads/${historyBranch}`;
     try {
         // Get the history branch
         const ref = yield octokit.rest.git.getRef({
@@ -30079,10 +30068,11 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
             ref: historyRef,
             sha: newHistoryCommit.data.sha,
         });
-        core.info(`The branch ${historyRef} has been updated`);
+        core.info(`The branch ${historyBranch} has been updated`);
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
         if (!(error.status === 404 && error.message.includes("Not Found"))) {
+            core.error(`failed to update a history branch ${historyBranch}: ${error.message}`);
             throw error;
         }
         // If the history branch doesn't exist, create it
