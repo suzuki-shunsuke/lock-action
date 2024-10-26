@@ -5,6 +5,16 @@ inputs:
     description: |
       lock branch
     required: true
+  branch_prefix:
+    description: |
+      lock branch prefix
+    required: false
+    default: "lock__"
+  history_branch_prefix:
+    description: |
+      history branch prefix
+    required: false
+    default: "history_lock__"
   github_token:
     description: |
       GitHub Access Token

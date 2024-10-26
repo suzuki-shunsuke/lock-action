@@ -29989,9 +29989,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.main = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
+const request_error_1 = __nccwpck_require__(1015);
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     run({
         branch: core.getInput("branch"),
+        branchPrefix: core.getInput("branch_prefix"),
+        historyBranchPrefix: core.getInput("history_branch_prefix"),
         githubToken: core.getInput("github_token"),
         owner: core.getInput("repo_owner") || process.env.GITHUB_REPOSITORY_OWNER || "",
         repo: core.getInput("repo_name") || (process.env.GITHUB_REPOSITORY || "").split("/")[1],
@@ -30000,6 +30003,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.main = main;
+const rootTree = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"; // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
 const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     // Create the remote branch
     const octokit = github.getOctokit(input.githubToken);
@@ -30019,25 +30023,62 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         message: input.message,
         // tree: parent.data.tree.sha,
         // tree: tree.data.sha,
-        tree: "4b825dc642cb6eb9a060e54bf8d69288fbee4904", // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
+        tree: rootTree,
     });
-    const ref = `refs/heads/${input.branch}`;
+    const ref = `refs/heads/${input.branchPrefix}${input.branch}`;
     try {
-        octokit.rest.git.createRef({
+    }
+    catch (error) {
+        if (!(error instanceof request_error_1.RequestError && error.status === 422 && error.message === "Reference already exists")) {
+            // If it fails to create the branch, it fails
+            throw error;
+        }
+        // If the remote branch has already existed, the key is being locked
+        core.setOutput("already_locked", true);
+        return;
+    }
+    core.setOutput("already_locked", false);
+    const historyRef = `refs/heads/${input.historyBranchPrefix}${input.branch}`;
+    try {
+        // Get the history branch
+        const ref = yield octokit.rest.git.getRef({
             owner: input.owner,
             repo: input.repo,
-            ref,
-            sha: commit.data.sha,
+            ref: historyRef,
+        });
+        // If the history exists, adds the empty commit to it
+        const newHistoryCommit = yield octokit.rest.git.createCommit({
+            owner: input.owner,
+            repo: input.repo,
+            message: input.message,
+            tree: ref.data.object.sha,
+        });
+        octokit.rest.git.updateRef({
+            owner: input.owner,
+            repo: input.repo,
+            ref: historyRef,
+            sha: newHistoryCommit.data.sha,
         });
     }
     catch (error) {
-        console.log(error);
+        // if (!(error instanceof RequestError && error.status === 404)) {
+        throw error;
+        // }
+        // If the history branch doesn't exist, create it
+        const newHistoryCommit = yield octokit.rest.git.createCommit({
+            owner: input.owner,
+            repo: input.repo,
+            message: input.message,
+            tree: rootTree,
+        });
+        octokit.rest.git.createRef({
+            owner: input.owner,
+            repo: input.repo,
+            ref: historyRef,
+            sha: commit.data.sha,
+        });
+        return;
     }
-    // If the remote branch has already existed, the key is being locked
-    // If it fails to create the branch, it fails
-    // Get the history branch
-    // If the history branch doesn't exist, create it
-    // If the history exists, adds the empty commit to it
 });
 
 
@@ -31906,6 +31947,56 @@ function parseParams (str) {
 module.exports = parseParams
 
 
+/***/ }),
+
+/***/ 1015:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   RequestError: () => (/* binding */ RequestError)
+/* harmony export */ });
+class RequestError extends Error {
+  name;
+  /**
+   * http status code
+   */
+  status;
+  /**
+   * Request options that lead to the error.
+   */
+  request;
+  /**
+   * Response object if a response was received
+   */
+  response;
+  constructor(message, statusCode, options) {
+    super(message);
+    this.name = "HttpError";
+    this.status = Number.parseInt(statusCode);
+    if (Number.isNaN(this.status)) {
+      this.status = 0;
+    }
+    if ("response" in options) {
+      this.response = options.response;
+    }
+    const requestCopy = Object.assign({}, options.request);
+    if (options.request.headers.authorization) {
+      requestCopy.headers = Object.assign({}, options.request.headers, {
+        authorization: options.request.headers.authorization.replace(
+          / .*$/,
+          " [REDACTED]"
+        )
+      });
+    }
+    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+    this.request = requestCopy;
+  }
+}
+
+
+
 /***/ })
 
 /******/ 	});
@@ -31941,6 +32032,34 @@ module.exports = parseParams
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
