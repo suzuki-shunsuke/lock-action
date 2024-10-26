@@ -30016,10 +30016,22 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     //   repo: input.repo,
     //   commit_sha: input.sha,
     // });
+    const metadata = {
+        message: input.message,
+        status: "lock",
+        actor: github.context.actor,
+        github_actions_workflow_run_url: `${github.context.serverUrl}/${input.owner}/${input.repo}/actions/runs/${github.context.runId}`,
+        event: github.context.payload,
+    };
+    if (github.context.payload.pull_request) {
+        metadata.pull_request_number = github.context.payload.pull_request.number;
+        metadata.pull_request_url = `${github.context.serverUrl}/${input.owner}/${input.repo}/pull/${github.context.payload.pull_request.number}`;
+    }
+    const msg = JSON.stringify(metadata);
     const commit = yield octokit.rest.git.createCommit({
         owner: input.owner,
         repo: input.repo,
-        message: input.message,
+        message: msg,
         // tree: parent.data.tree.sha,
         // tree: tree.data.sha,
         tree: rootTree,
@@ -30058,7 +30070,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         const newHistoryCommit = yield octokit.rest.git.createCommit({
             owner: input.owner,
             repo: input.repo,
-            message: input.message,
+            message: msg,
             tree: ref.data.object.sha,
         });
         yield octokit.rest.git.updateRef({
@@ -30077,7 +30089,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         const newHistoryCommit = yield octokit.rest.git.createCommit({
             owner: input.owner,
             repo: input.repo,
-            message: input.message,
+            message: msg,
             tree: rootTree,
         });
         yield octokit.rest.git.createRef({
