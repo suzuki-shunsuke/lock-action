@@ -95,12 +95,17 @@ const run = async (input: Input) => {
       repo: input.repo,
       ref: historyRef,
     });
+    const newHistoryTree = await octokit.rest.git.getTree({
+      owner: input.owner,
+      repo: input.repo,
+      tree_sha: ref.data.object.sha,
+    });
     // If the history exists, adds the empty commit to it
     const newHistoryCommit = await octokit.rest.git.createCommit({
       owner: input.owner,
       repo: input.repo,
       message: msg,
-      tree: ref.data.object.sha,
+      tree: newHistoryTree.data.sha,
     });
     await octokit.rest.git.updateRef({
       owner: input.owner,
