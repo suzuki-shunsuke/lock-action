@@ -80,8 +80,10 @@ const run = async (input: Input) => {
     // if (!(error instanceof RequestError && error.status === 422 && error.message === "Reference already exists")) {
     if (!(error.status === 422 && error.message === "Reference already exists")) {
       // If it fails to create the branch, it fails
+      console.log("throw error");
       throw error;
     }
+    console.log("the key is already locked");
     // If the remote branch has already existed, the key is being locked
     core.setOutput("already_locked", true);
     return;
