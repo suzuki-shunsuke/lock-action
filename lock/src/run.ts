@@ -27,7 +27,7 @@ export const main = async () => {
     owner: core.getInput("repo_owner") || process.env.GITHUB_REPOSITORY_OWNER || "",
     repo: core.getInput("repo_name") || (process.env.GITHUB_REPOSITORY || "").split("/")[1],
     message: core.getInput("message"),
-    sha: core.getInput("sha") || process.env.GITHUB_SHA || "",
+    sha: process.env.GITHUB_SHA || "",
   });
 };
 
