@@ -35,17 +35,24 @@ const run = async (input: Input) => {
   // Create the remote branch
   const octokit = github.getOctokit(input.githubToken);
 
-  const parent = await octokit.rest.git.getCommit({
+  const tree = await octokit.rest.git.createTree({
     owner: input.owner,
     repo: input.repo,
-    commit_sha: input.sha,
+    tree: [],
   });
+
+  // const parent = await octokit.rest.git.getCommit({
+  //   owner: input.owner,
+  //   repo: input.repo,
+  //   commit_sha: input.sha,
+  // });
 
   const commit = await octokit.rest.git.createCommit({
     owner: input.owner,
     repo: input.repo,
     message: input.message,
-    tree: parent.data.tree.sha,
+    // tree: parent.data.tree.sha,
+    tree: tree.data.sha,
   });
 
   const ref = `refs/heads/${input.branch}`;
