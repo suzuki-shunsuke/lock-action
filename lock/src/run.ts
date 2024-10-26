@@ -87,7 +87,7 @@ const run = async (input: Input) => {
   core.info(`The branch ${branch} has been created`);
 
   const historyBranch = `${input.historyBranchPrefix}${input.branch}`;
-  const historyRef = `refs/heads/${historyBranch}`;
+  const historyRef = `heads/${historyBranch}`;
   try {
     // Get the history branch
     const ref = await octokit.rest.git.getRef({
@@ -125,10 +125,10 @@ const run = async (input: Input) => {
     await octokit.rest.git.createRef({
       owner: input.owner,
       repo: input.repo,
-      ref: historyRef,
+      ref: `refs/${historyRef}`,
       sha: commit.data.sha,
     });
-    core.info(`The branch ${historyRef} has been created`);
+    core.info(`The branch ${historyBranch} has been created`);
     return;
   }
 }

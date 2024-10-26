@@ -30047,7 +30047,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     core.setOutput("already_locked", false);
     core.info(`The branch ${branch} has been created`);
     const historyBranch = `${input.historyBranchPrefix}${input.branch}`;
-    const historyRef = `refs/heads/${historyBranch}`;
+    const historyRef = `heads/${historyBranch}`;
     try {
         // Get the history branch
         const ref = yield octokit.rest.git.getRef({
@@ -30085,10 +30085,10 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         yield octokit.rest.git.createRef({
             owner: input.owner,
             repo: input.repo,
-            ref: historyRef,
+            ref: `refs/${historyRef}`,
             sha: commit.data.sha,
         });
-        core.info(`The branch ${historyRef} has been created`);
+        core.info(`The branch ${historyBranch} has been created`);
         return;
     }
 });
