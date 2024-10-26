@@ -31572,7 +31572,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         console.log("error status", error.status);
         console.log("error message", error.message);
         // if (!(error instanceof RequestError && error.status === 422 && error.message === "Reference already exists")) {
-        if (!(error.status === 422 && error.message === "Reference already exists")) {
+        if (!(error.status === 422 && error.message.includes("Reference already exists"))) {
             // If it fails to create the branch, it fails
             console.log("throw error");
             throw error;
