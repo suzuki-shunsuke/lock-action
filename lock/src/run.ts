@@ -73,8 +73,10 @@ const run = async (input: Input) => {
       ref: ref,
       sha: commit.data.sha,
     });
-  } catch (error: unknown) {
-    if (!(error instanceof RequestError && error.status === 422 && error.message === "Reference already exists")) {
+    // } catch (error: unknown) {
+  } catch (error: any) {
+    // if (!(error instanceof RequestError && error.status === 422 && error.message === "Reference already exists")) {
+    if (!(error.status === 422 && error.message === "Reference already exists")) {
       // If it fails to create the branch, it fails
       throw error;
     }

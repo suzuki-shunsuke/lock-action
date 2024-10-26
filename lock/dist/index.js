@@ -31564,9 +31564,11 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
             ref: ref,
             sha: commit.data.sha,
         });
+        // } catch (error: unknown) {
     }
     catch (error) {
-        if (!(error instanceof octokit_1.RequestError && error.status === 422 && error.message === "Reference already exists")) {
+        // if (!(error instanceof RequestError && error.status === 422 && error.message === "Reference already exists")) {
+        if (!(error.status === 422 && error.message === "Reference already exists")) {
             // If it fails to create the branch, it fails
             throw error;
         }
