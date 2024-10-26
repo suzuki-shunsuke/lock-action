@@ -1,0 +1,40 @@
+name: Lock
+description: Lock
+inputs:
+  title:
+    description: |
+      Issue Title
+    required: true
+  github_token:
+    description: |
+      GitHub Access Token
+      issues:write - Create, open, and close issues
+    required: false
+    default: ${{ github.token }}
+outputs:
+  created:
+    description: Whether the action created an issue
+    value: ${{ steps.target-config.outputs.working_directory }}
+  already_locked:
+    description: Whether the action has already been locked
+    value: ${{ steps.target-config.outputs.working_directory }}
+runs:
+  using: composite
+  steps:
+    # Search the issue by title
+    - run: gh issue list --search "error no:assignee sort:created-asc"
+      shell: bash
+      if: |
+        ! contains(fromJSON('["workflow_dispatch", "schedule"]'), github.event_name)
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+    # If the issue is not found, create a new issue
+    # If it fails to create a new issue, fail
+    # Open the issue
+    # If the issue has already been opened, fail
+    - run: github-comment exec -- ci-info run | sed "s/^export //" >> "$GITHUB_ENV"
+      shell: bash
+      if: |
+        ! contains(fromJSON('["workflow_dispatch", "schedule"]'), github.event_name)
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
