@@ -105,7 +105,7 @@ const run = async (input: Input) => {
       sha: newHistoryCommit.data.sha,
     });
   } catch (error: unknown) {
-    if (!(error instanceof RequestError && error.status === 404 && error.message === "Not Found")) {
+    if (!(error instanceof RequestError)) { // && error.status === 404 && error.message === "Not Found")) {
       throw error;
     }
 
