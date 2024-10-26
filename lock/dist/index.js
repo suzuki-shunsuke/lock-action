@@ -30013,10 +30013,9 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     };
     if (github.context.payload.pull_request) {
         metadata.pull_request_number = github.context.payload.pull_request.number;
-        metadata.pull_request_url = `${github.context.serverUrl}/${input.owner}/${input.repo}/pull/${github.context.payload.pull_request.number}`;
         metadata.github_actions_workflow_run_url += `?pr=${metadata.pull_request_number}`;
     }
-    metadata.event = github.context.payload;
+    // Remove links to pull requests because they are noisy in pull request timeline.
     const msg = JSON.stringify(metadata, null, "  ");
     const commit = yield octokit.rest.git.createCommit({
         owner: input.owner,
