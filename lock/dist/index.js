@@ -30003,11 +30003,11 @@ exports.main = main;
 const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     // Create the remote branch
     const octokit = github.getOctokit(input.githubToken);
-    const tree = yield octokit.rest.git.createTree({
-        owner: input.owner,
-        repo: input.repo,
-        tree: [],
-    });
+    // const tree = await octokit.rest.git.createTree({
+    //   owner: input.owner,
+    //   repo: input.repo,
+    //   tree: [],
+    // });
     // const parent = await octokit.rest.git.getCommit({
     //   owner: input.owner,
     //   repo: input.repo,
@@ -30018,7 +30018,8 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         repo: input.repo,
         message: input.message,
         // tree: parent.data.tree.sha,
-        tree: tree.data.sha,
+        // tree: tree.data.sha,
+        tree: "4b825dc642cb6eb9a060e54bf8d69288fbee4904", // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
     });
     const ref = `refs/heads/${input.branch}`;
     octokit.rest.git.createRef({
