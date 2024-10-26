@@ -33,6 +33,9 @@ inputs:
     description: |
       commit message.
     required: false
+outputs:
+  already_locked:
+    description: Whether the branch is already locked
 runs:
   using: "node20"
   main: "dist/index.js"
