@@ -3,6 +3,7 @@ import * as github from "@actions/github";
 import * as exec from "@actions/exec";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/core";
+import type { GraphQlQueryResponseData } from "@octokit/graphql";
 // import { RequestError } from "@octokit/request-error";
 import { RequestError } from "octokit";
 import * as path from "path";
@@ -16,6 +17,7 @@ type Input = {
   repo: string;
   message: string;
   sha: string;
+  disable_history: boolean;
 };
 
 type Issue = {
@@ -34,6 +36,7 @@ export const main = async () => {
     repo: core.getInput("repo_name") || (process.env.GITHUB_REPOSITORY || "").split("/")[1],
     message: core.getInput("message"),
     sha: process.env.GITHUB_SHA || "",
+    disable_history: core.getBooleanInput("disable_history"),
   });
 };
 
@@ -85,32 +88,59 @@ const run = async (input: Input) => {
   core.setOutput("already_locked", false);
   core.info(`The branch ${branch} has been created`);
 
+  if (input.disable_history) {
+    core.info("The history branch is disabled");
+    return;
+  }
+
   const historyBranch = `${input.historyBranchPrefix}${input.branch}`;
   const historyRef = `heads/${historyBranch}`;
   try {
     // Get the history branch
-    const ref = await octokit.rest.git.getRef({
+    // const ref = await octokit.rest.git.getRef({
+    //   owner: input.owner,
+    //   repo: input.repo,
+    //   ref: historyRef,
+    // });
+    // const tree = await octokit.rest.git.getTree({
+    //   owner: input.owner,
+    //   repo: input.repo,
+    //   tree_sha: ref.data.object.sha,
+    // });
+
+    const result = await octokit.graphql<GraphQlQueryResponseData>(`query($owner: String!, $repo: String!, $ref: String!) {
+  repository(owner: $owner, name: $repo) {
+    ref(qualifiedName: $ref) {
+      prefix
+      name
+      target {
+        ... on Commit {
+          oid
+          tree {
+            oid
+          }
+        } 
+      }
+    }
+  }
+}`, {
       owner: input.owner,
       repo: input.repo,
-      ref: historyRef,
+      ref: historyBranch,
     });
-    const newHistoryTree = await octokit.rest.git.getTree({
-      owner: input.owner,
-      repo: input.repo,
-      tree_sha: ref.data.object.sha,
-    });
+
     // If the history exists, adds the empty commit to it
-    const newHistoryCommit = await octokit.rest.git.createCommit({
+    const commit = await octokit.rest.git.createCommit({
       owner: input.owner,
       repo: input.repo,
       message: msg,
-      tree: newHistoryTree.data.sha,
+      tree: result.repository.ref.target.tree.oid,
     });
     await octokit.rest.git.updateRef({
       owner: input.owner,
       repo: input.repo,
       ref: historyRef,
-      sha: newHistoryCommit.data.sha,
+      sha: commit.data.sha,
     });
     core.info(`The branch ${historyBranch} has been updated`);
   } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
@@ -120,7 +150,7 @@ const run = async (input: Input) => {
     }
 
     // If the history branch doesn't exist, create it
-    const newHistoryCommit = await octokit.rest.git.createCommit({
+    const commit = await octokit.rest.git.createCommit({
       owner: input.owner,
       repo: input.repo,
       message: msg,

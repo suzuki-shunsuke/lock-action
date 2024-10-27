@@ -33,6 +33,11 @@ inputs:
     description: |
       commit message.
     required: false
+  disable_history:
+    description: |
+      Disable history.
+    default: "false"
+    required: false
 outputs:
   already_locked:
     description: Whether the branch is already locked

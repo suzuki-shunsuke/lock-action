@@ -29999,6 +29999,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         repo: core.getInput("repo_name") || (process.env.GITHUB_REPOSITORY || "").split("/")[1],
         message: core.getInput("message"),
         sha: process.env.GITHUB_SHA || "",
+        disable_history: core.getBooleanInput("disable_history"),
     });
 });
 exports.main = main;
@@ -30045,32 +30046,56 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     }
     core.setOutput("already_locked", false);
     core.info(`The branch ${branch} has been created`);
+    if (input.disable_history) {
+        core.info("The history branch is disabled");
+        return;
+    }
     const historyBranch = `${input.historyBranchPrefix}${input.branch}`;
     const historyRef = `heads/${historyBranch}`;
     try {
         // Get the history branch
-        const ref = yield octokit.rest.git.getRef({
+        // const ref = await octokit.rest.git.getRef({
+        //   owner: input.owner,
+        //   repo: input.repo,
+        //   ref: historyRef,
+        // });
+        // const tree = await octokit.rest.git.getTree({
+        //   owner: input.owner,
+        //   repo: input.repo,
+        //   tree_sha: ref.data.object.sha,
+        // });
+        const result = yield octokit.graphql(`query($owner: String!, $repo: String!, $ref: String!) {
+  repository(owner: $owner, name: $repo) {
+    ref(qualifiedName: $ref) {
+      prefix
+      name
+      target {
+        ... on Commit {
+          oid
+          tree {
+            oid
+          }
+        } 
+      }
+    }
+  }
+}`, {
             owner: input.owner,
             repo: input.repo,
-            ref: historyRef,
-        });
-        const newHistoryTree = yield octokit.rest.git.getTree({
-            owner: input.owner,
-            repo: input.repo,
-            tree_sha: ref.data.object.sha,
+            ref: historyBranch,
         });
         // If the history exists, adds the empty commit to it
-        const newHistoryCommit = yield octokit.rest.git.createCommit({
+        const commit = yield octokit.rest.git.createCommit({
             owner: input.owner,
             repo: input.repo,
             message: msg,
-            tree: newHistoryTree.data.sha,
+            tree: result.repository.ref.target.tree.oid,
         });
         yield octokit.rest.git.updateRef({
             owner: input.owner,
             repo: input.repo,
             ref: historyRef,
-            sha: newHistoryCommit.data.sha,
+            sha: commit.data.sha,
         });
         core.info(`The branch ${historyBranch} has been updated`);
     }
@@ -30080,7 +30105,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
             throw error;
         }
         // If the history branch doesn't exist, create it
-        const newHistoryCommit = yield octokit.rest.git.createCommit({
+        const commit = yield octokit.rest.git.createCommit({
             owner: input.owner,
             repo: input.repo,
             message: msg,

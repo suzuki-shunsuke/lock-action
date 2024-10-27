@@ -5,6 +5,7 @@
   "dependencies": {
     "@actions/core": "1.11.1",
     "@actions/github": "^6.0.0",
+    "@octokit/graphql": "^8.1.1",
     "@octokit/plugin-paginate-graphql": "^5.2.4",
     "@octokit/request-error": "^6.1.5",
     "octokit": "^4.0.2"
