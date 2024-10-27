@@ -31,18 +31,7 @@ export const main = async () => {
 const run = async (input: Input) => {
   const octokit = github.getOctokit(input.githubToken);
 
-  const metadata: any = {
-    message: input.message,
-    status: "unlock",
-    actor: github.context.actor,
-    github_actions_workflow_run_url: `${github.context.serverUrl}/${input.owner}/${input.repo}/actions/runs/${github.context.runId}`,
-  };
-  if (github.context.payload.pull_request) {
-    metadata.pull_request_number = github.context.payload.pull_request.number;
-    metadata.github_actions_workflow_run_url += `?pr=${metadata.pull_request_number}`;
-  }
-  // Remove links to pull requests because they are noisy in pull request timeline.
-  const msg = JSON.stringify(metadata, null, "  ");
+  const msg = lib.getMsg(input);
 
   const branch = `${input.branchPrefix}${input.branch}`;
   const ref = `refs/heads/${branch}`;

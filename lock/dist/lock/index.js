@@ -29951,7 +29951,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.updateHistoryBranch = exports.rootTree = void 0;
+exports.getMsg = exports.updateHistoryBranch = exports.rootTree = void 0;
 const core = __importStar(__nccwpck_require2_(7484));
 const github = __importStar(__nccwpck_require2_(3228));
 exports.rootTree = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"; // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
@@ -30024,6 +30024,21 @@ const updateHistoryBranch = (input, msg) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.updateHistoryBranch = updateHistoryBranch;
+const getMsg = (input) => {
+    const metadata = {
+        message: input.message,
+        status: "unlock",
+        actor: github.context.actor,
+        github_actions_workflow_run_url: `${github.context.serverUrl}/${input.owner}/${input.repo}/actions/runs/${github.context.runId}`,
+    };
+    if (github.context.payload.pull_request) {
+        metadata.pull_request_number = github.context.payload.pull_request.number;
+        metadata.github_actions_workflow_run_url += `?pr=${metadata.pull_request_number}`;
+    }
+    // Remove links to pull requests because they are noisy in pull request timeline.
+    return JSON.stringify(metadata, null, "  ");
+};
+exports.getMsg = getMsg;
 
 
 /***/ }),
@@ -61948,18 +61963,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
 exports.main = main;
 const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     const octokit = github.getOctokit(input.githubToken);
-    const metadata = {
-        message: input.message,
-        status: "lock",
-        actor: github.context.actor,
-        github_actions_workflow_run_url: `${github.context.serverUrl}/${input.owner}/${input.repo}/actions/runs/${github.context.runId}`,
-    };
-    if (github.context.payload.pull_request) {
-        metadata.pull_request_number = github.context.payload.pull_request.number;
-        metadata.github_actions_workflow_run_url += `?pr=${metadata.pull_request_number}`;
-    }
-    // Remove links to pull requests because they are noisy in pull request timeline.
-    const msg = JSON.stringify(metadata, null, "  ");
+    const msg = lib.getMsg(input);
     const commit = yield octokit.rest.git.createCommit({
         owner: input.owner,
         repo: input.repo,

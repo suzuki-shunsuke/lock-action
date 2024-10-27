@@ -5,7 +5,9 @@ type Input = {
     githubToken: string;
     owner: string;
     repo: string;
+    message: string;
     disable_history: boolean;
 };
 export declare const updateHistoryBranch: (input: Input, msg: string) => Promise<any>;
+export declare const getMsg: (input: Input) => string;
 export {};
