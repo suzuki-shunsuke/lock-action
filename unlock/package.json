@@ -5,8 +5,7 @@
   "dependencies": {
     "lib": "file:../lib/dist",
     "@actions/core": "1.11.1",
-    "@actions/github": "^6.0.0",
-    "@octokit/graphql": "^8.1.1"
+    "@actions/github": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "20.16.13",

@@ -33,7 +33,7 @@ const run = async (input: Input) => {
 
   const metadata: any = {
     message: input.message,
-    status: "lock",
+    status: "unlock",
     actor: github.context.actor,
     github_actions_workflow_run_url: `${github.context.serverUrl}/${input.owner}/${input.repo}/actions/runs/${github.context.runId}`,
   };
@@ -44,35 +44,26 @@ const run = async (input: Input) => {
   // Remove links to pull requests because they are noisy in pull request timeline.
   const msg = JSON.stringify(metadata, null, "  ");
 
-  const commit = await octokit.rest.git.createCommit({
-    owner: input.owner,
-    repo: input.repo,
-    message: msg,
-    tree: lib.rootTree,
-  });
-
   const branch = `${input.branchPrefix}${input.branch}`;
   const ref = `refs/heads/${branch}`;
 
   try {
-    await octokit.rest.git.createRef({
+    const commit = await octokit.rest.git.deleteRef({
       owner: input.owner,
       repo: input.repo,
-      ref: ref,
-      sha: commit.data.sha,
+      ref: `heads/${input.branch}`,
     });
   } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
-    if (!(error.status === 422 && error.message.includes("Reference already exists"))) {
-      core.error(`failed to create a branch ${branch}: ${error.message}`);
+    if (!(error.status === 404 && error.message.includes("Not Found"))) {
       throw error;
     }
-    core.notice("the key is already locked");
-    // If the remote branch has already existed, the key is being locked
-    core.setOutput("already_locked", true);
+    // If the lock branch doesn't exist, the key is already unlocked
+    core.notice("the key is already unlocked");
+    core.setOutput("already_unlocked", true);
     return;
   }
-  core.setOutput("already_locked", false);
-  core.info(`The branch ${branch} has been created`);
+  core.setOutput("already_unlocked", false);
+  core.info(`The branch ${branch} has been deleted`);
 
   await lib.updateHistoryBranch(input, msg);
 }

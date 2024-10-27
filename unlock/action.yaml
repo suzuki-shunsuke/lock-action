@@ -1,0 +1,46 @@
+name: Unlock
+description: Unlock
+inputs:
+  branch:
+    description: |
+      lock branch
+    required: true
+  branch_prefix:
+    description: |
+      lock branch prefix
+    required: false
+    default: "lock__"
+  history_branch_prefix:
+    description: |
+      history branch prefix
+    required: false
+    default: "history_lock__"
+  github_token:
+    description: |
+      GitHub Access Token
+      contents:write - Create branches and commits
+    required: false
+    default: ${{ github.token }}
+  repo_owner:
+    description: |
+      Repository owner.
+    required: false
+  repo_name:
+    description: |
+      Repository name.
+    required: false
+  message:
+    description: |
+      commit message.
+    required: false
+  disable_history:
+    description: |
+      Disable history.
+    default: "false"
+    required: false
+outputs:
+  already_locked:
+    description: Whether the branch is already locked
+runs:
+  using: "node20"
+  main: "dist/index.js"
