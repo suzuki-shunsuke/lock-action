@@ -61972,7 +61972,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
-        if (!(error.status === 404 && error.message.includes("Not Found"))) {
+        if (!(error.status === 404 && error.message.includes("Reference does not exist"))) {
             throw error;
         }
         // If the lock branch doesn't exist, the key is already unlocked
