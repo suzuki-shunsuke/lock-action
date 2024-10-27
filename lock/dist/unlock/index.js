@@ -57662,10 +57662,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const lib_1 = __nccwpck_require__(6311);
 try {
+    const gotLock = core.getState("got_lock");
+    core.debug(`got_lock: ${gotLock}`);
     if (!core.getBooleanInput("post_unlock")) {
         core.info("unlock is disabled.");
     }
-    else if (core.getState("got_lock") !== "true") {
+    else if (gotLock !== "true") {
         core.info("skip unlocking as it failed to get a lock.");
     }
     else {
