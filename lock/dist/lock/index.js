@@ -29951,7 +29951,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getMsg = exports.updateHistoryBranch = exports.rootTree = void 0;
+exports.unlock = exports.getMsg = exports.updateHistoryBranch = exports.rootTree = void 0;
 const core = __importStar(__nccwpck_require2_(7484));
 const github = __importStar(__nccwpck_require2_(3228));
 exports.rootTree = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"; // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
@@ -30039,6 +30039,44 @@ const getMsg = (input) => {
     return JSON.stringify(metadata, null, "  ");
 };
 exports.getMsg = getMsg;
+const unlock = () => __awaiter(void 0, void 0, void 0, function* () {
+    run({
+        branch: core.getInput("branch"),
+        branchPrefix: core.getInput("branch_prefix"),
+        historyBranchPrefix: core.getInput("history_branch_prefix"),
+        githubToken: core.getInput("github_token"),
+        owner: core.getInput("repo_owner") || process.env.GITHUB_REPOSITORY_OWNER || "",
+        repo: core.getInput("repo_name") || (process.env.GITHUB_REPOSITORY || "").split("/")[1],
+        message: core.getInput("message"),
+        disable_history: core.getBooleanInput("disable_history"),
+    });
+});
+exports.unlock = unlock;
+const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
+    const octokit = github.getOctokit(input.githubToken);
+    const msg = (0, exports.getMsg)(input);
+    const branch = `${input.branchPrefix}${input.branch}`;
+    const ref = `refs/heads/${branch}`;
+    try {
+        const commit = yield octokit.rest.git.deleteRef({
+            owner: input.owner,
+            repo: input.repo,
+            ref: `heads/${branch}`,
+        });
+    }
+    catch (error) { // https://github.com/octokit/rest.js/issues/266
+        if (!(error.status === 404 && error.message.includes("Reference does not exist"))) {
+            throw error;
+        }
+        // If the lock branch doesn't exist, the key is already unlocked
+        core.notice("the key is already unlocked");
+        core.setOutput("already_unlocked", true);
+        return;
+    }
+    core.setOutput("already_unlocked", false);
+    core.info(`The branch ${branch} has been deleted`);
+    yield (0, exports.updateHistoryBranch)(input, msg);
+});
 
 
 /***/ }),

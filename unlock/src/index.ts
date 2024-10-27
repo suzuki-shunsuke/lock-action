@@ -1,10 +1,8 @@
 import * as core from "@actions/core";
-import { main } from "./run";
-
-export { main };
+import { unlock } from "lib";
 
 try {
-  main();
+  unlock();
 } catch (error) {
   core.setFailed(
     error instanceof Error ? error.message : JSON.stringify(error),

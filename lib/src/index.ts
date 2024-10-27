@@ -6,6 +6,7 @@ export const rootTree = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"; // https://s
 type Input = {
   branch: string;
   historyBranchPrefix: string;
+  branchPrefix: string;
   githubToken: string;
   owner: string;
   repo: string;
@@ -99,3 +100,45 @@ export const getMsg = (input: Input): string => {
   // Remove links to pull requests because they are noisy in pull request timeline.
   return JSON.stringify(metadata, null, "  ");
 };
+
+export const unlock = async () => {
+  run({
+    branch: core.getInput("branch"),
+    branchPrefix: core.getInput("branch_prefix"),
+    historyBranchPrefix: core.getInput("history_branch_prefix"),
+    githubToken: core.getInput("github_token"),
+    owner: core.getInput("repo_owner") || process.env.GITHUB_REPOSITORY_OWNER || "",
+    repo: core.getInput("repo_name") || (process.env.GITHUB_REPOSITORY || "").split("/")[1],
+    message: core.getInput("message"),
+    disable_history: core.getBooleanInput("disable_history"),
+  });
+};
+
+const run = async (input: Input) => {
+  const octokit = github.getOctokit(input.githubToken);
+
+  const msg = getMsg(input);
+
+  const branch = `${input.branchPrefix}${input.branch}`;
+  const ref = `refs/heads/${branch}`;
+
+  try {
+    const commit = await octokit.rest.git.deleteRef({
+      owner: input.owner,
+      repo: input.repo,
+      ref: `heads/${branch}`,
+    });
+  } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
+    if (!(error.status === 404 && error.message.includes("Reference does not exist"))) {
+      throw error;
+    }
+    // If the lock branch doesn't exist, the key is already unlocked
+    core.notice("the key is already unlocked");
+    core.setOutput("already_unlocked", true);
+    return;
+  }
+  core.setOutput("already_unlocked", false);
+  core.info(`The branch ${branch} has been deleted`);
+
+  await updateHistoryBranch(input, msg);
+}

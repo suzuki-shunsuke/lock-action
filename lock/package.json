@@ -4,7 +4,6 @@
   },
   "dependencies": {
     "lib": "file:../lib/dist",
-    "unlock": "file:../unlock/dist",
     "@actions/core": "1.11.1",
     "@actions/github": "^6.0.0",
     "@octokit/graphql": "^8.1.1"

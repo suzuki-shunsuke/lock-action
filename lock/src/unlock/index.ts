@@ -1,10 +1,10 @@
 import * as core from "@actions/core";
-import { main } from "unlock";
+import { unlock } from "lib";
 
 try {
   if (core.getBooleanInput("post_unlock")) {
     core.info("unlocking...");
-    main();
+    unlock();
   } else {
     core.info("unlock is disabled.");
   }
