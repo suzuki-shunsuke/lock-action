@@ -2,11 +2,15 @@ import * as core from "@actions/core";
 import { unlock } from "lib";
 
 try {
-  if (core.getBooleanInput("post_unlock") && core.getState("got_lock") !== "true") {
+  const gotLock = core.getState("got_lock");
+  core.debug(`got_lock: ${gotLock}`);
+  if (!core.getBooleanInput("post_unlock")) {
+    core.info("unlock is disabled.");
+  } else if (gotLock !== "true") {
+    core.info("skip unlocking as it failed to get a lock.");
+  } else {
     core.info("unlocking...");
     unlock();
-  } else {
-    core.info("unlock is disabled.");
   }
 } catch (error) {
   core.setFailed(
