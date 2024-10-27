@@ -30084,12 +30084,14 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
             repo: input.repo,
             ref: historyBranch,
         });
+        console.log(result);
         // If the history exists, adds the empty commit to it
         const commit = yield octokit.rest.git.createCommit({
             owner: input.owner,
             repo: input.repo,
             message: msg,
-            tree: result.repository.ref.target.tree.oid,
+            // tree: result.repository.ref.target.tree.oid,
+            tree: "9891bd30c41d0cb73f2d02dc675cae90d299331b",
         });
         yield octokit.rest.git.updateRef({
             owner: input.owner,
