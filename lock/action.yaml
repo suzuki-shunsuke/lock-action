@@ -48,5 +48,5 @@ outputs:
     description: Whether the branch is already locked
 runs:
   using: "node20"
-  main: "dist/index.js"
-  post: '../unlock/dist/index.js'
+  main: "dist/lock/index.js"
+  post: "dist/unlock/index.js"
