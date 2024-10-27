@@ -57662,7 +57662,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const lib_1 = __nccwpck_require__(6311);
 try {
-    if (core.getBooleanInput("post_unlock")) {
+    if (core.getBooleanInput("post_unlock") && core.getState("got_lock") !== "true") {
         core.info("unlocking...");
         (0, lib_1.unlock)();
     }

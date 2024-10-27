@@ -58,9 +58,10 @@ const run = async (input: Input) => {
     core.notice("the key is already locked");
     // If the remote branch has already existed, the key is being locked
     core.setOutput("already_locked", true);
-    return;
+    throw error;
   }
   core.setOutput("already_locked", false);
+  core.saveState("got_lock", true);
   core.info(`The branch ${branch} has been created`);
 
   await lib.updateHistoryBranch(input, msg);
