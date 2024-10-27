@@ -97,17 +97,6 @@ const run = async (input: Input) => {
   const historyRef = `heads/${historyBranch}`;
   try {
     // Get the history branch
-    // const ref = await octokit.rest.git.getRef({
-    //   owner: input.owner,
-    //   repo: input.repo,
-    //   ref: historyRef,
-    // });
-    // const tree = await octokit.rest.git.getTree({
-    //   owner: input.owner,
-    //   repo: input.repo,
-    //   tree_sha: ref.data.object.sha,
-    // });
-
     const result = await octokit.graphql<GraphQlQueryResponseData>(`query($owner: String!, $repo: String!, $ref: String!) {
   repository(owner: $owner, name: $repo) {
     ref(qualifiedName: $ref) {
@@ -128,10 +117,6 @@ const run = async (input: Input) => {
       repo: input.repo,
       ref: historyBranch,
     });
-
-    console.log(result);
-    console.log(`result.repository.ref.target.oid, ${result.repository.ref.target.oid}`);
-    console.log(`result.repository.ref.target.tree.oid, ${result.repository.ref.target.tree.oid}`);
 
     // If the history exists, adds the empty commit to it
     const commit = await octokit.rest.git.createCommit({
