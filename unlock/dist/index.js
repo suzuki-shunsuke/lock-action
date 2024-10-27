@@ -61878,8 +61878,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.main = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const run_1 = __nccwpck_require__(9786);
+Object.defineProperty(exports, "main", ({ enumerable: true, get: function () { return run_1.main; } }));
 try {
     (0, run_1.main)();
 }

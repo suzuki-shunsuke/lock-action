@@ -1,1 +1,2 @@
-export {};
+import { main } from "./run";
+export { main };

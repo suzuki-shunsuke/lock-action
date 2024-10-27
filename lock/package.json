@@ -1,9 +1,10 @@
 {
   "scripts": {
-    "build": "ncc build src/index.ts --license LICENSE"
+    "build": "ncc build src/lock/index.ts --license LICENSE -o dist/lock && ncc build src/unlock/index.ts --license LICENSE -o dist/unlock"
   },
   "dependencies": {
     "lib": "file:../lib/dist",
+    "unlock": "file:../unlock/dist",
     "@actions/core": "1.11.1",
     "@actions/github": "^6.0.0",
     "@octokit/graphql": "^8.1.1"
