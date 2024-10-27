@@ -38,9 +38,16 @@ inputs:
       Disable history.
     default: "false"
     required: false
+  post_unlock:
+    description: |
+      Whether unlock the key in the post step.
+    default: "false"
+    required: false
 outputs:
   already_locked:
     description: Whether the branch is already locked
 runs:
   using: "node20"
-  main: "dist/index.js"
+  main: "dist/lock/index.js"
+  post: '../unlock/dist/index.js'
+  post-if: inputs.post_unlock == 'true'
