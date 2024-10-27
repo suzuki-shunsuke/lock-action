@@ -50,4 +50,4 @@ runs:
   using: "node20"
   main: "dist/index.js"
   post: '../unlock/dist/index.js'
-  post-if: inputs.post_unlock == 'true'
+  # post-if: inputs.post_unlock == 'true'
