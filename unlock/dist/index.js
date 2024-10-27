@@ -61966,7 +61966,7 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
         const commit = yield octokit.rest.git.deleteRef({
             owner: input.owner,
             repo: input.repo,
-            ref: `heads/${input.branch}`,
+            ref: `heads/${branch}`,
         });
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266

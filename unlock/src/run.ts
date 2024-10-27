@@ -51,7 +51,7 @@ const run = async (input: Input) => {
     const commit = await octokit.rest.git.deleteRef({
       owner: input.owner,
       repo: input.repo,
-      ref: `heads/${input.branch}`,
+      ref: `heads/${branch}`,
     });
   } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
     if (!(error.status === 404 && error.message.includes("Not Found"))) {
