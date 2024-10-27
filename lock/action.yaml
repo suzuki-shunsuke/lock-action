@@ -48,6 +48,6 @@ outputs:
     description: Whether the branch is already locked
 runs:
   using: "node20"
-  main: "dist/lock/index.js"
+  main: "dist/index.js"
   post: '../unlock/dist/index.js'
   post-if: inputs.post_unlock == 'true'

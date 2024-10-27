@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "ncc build src/index.ts -o dist/lock --license LICENSE && ncc build -o dist/unlock unlock/index.ts --license LICENSE"
+    "build": "ncc build src/index.ts --license LICENSE"
   },
   "dependencies": {
     "lib": "file:../lib/dist",
