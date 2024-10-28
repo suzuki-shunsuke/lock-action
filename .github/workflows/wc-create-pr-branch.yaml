@@ -71,7 +71,7 @@ jobs:
 
       - run: npm i
       - run: npm run build
-      - run: find ./*/dist/* -print0 | xargs -0 git add -f
+      - run: find ./dist/* -print0 | xargs -0 git add -f
       - run: |
           git commit -m "chore: test $PR_NUMBER
           base revision: ${BASE_SHA}"

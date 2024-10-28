@@ -52,7 +52,7 @@ jobs:
       - run: git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - run: cmdx build
-      - run: find ./*/dist/* -print0 | xargs -0 git add -f
+      - run: find ./dist/* -print0 | xargs -0 git add -f
 
       - run: git checkout -b "release/${TAG}"
       - run: |
