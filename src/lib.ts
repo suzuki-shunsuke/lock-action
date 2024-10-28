@@ -26,7 +26,8 @@ export const getMsg = (input: Input): string => {
         metadata.github_actions_workflow_run_url += `?pr=${metadata.pull_request_number}`;
     }
     // Remove links to pull requests because they are noisy in pull request timeline.
-    return JSON.stringify(metadata, null, "  ");
+    return `${input.mode} by ${github.context.actor}: ${input.message}
+${JSON.stringify(metadata, null, "  ")}`;
 };
 
 type Metadata = {
@@ -37,3 +38,10 @@ type Metadata = {
     pull_request_number?: number;
 };
 
+export const extractMetadata = (message: string, key: string): any => {
+    const idx = message.indexOf("\n");
+    if (idx === -1) {
+        throw new Error(`The message of key ${key} is invalid`);
+    }
+    return JSON.parse(message.slice(idx + 1));
+};

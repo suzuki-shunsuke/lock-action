@@ -37,7 +37,7 @@ export const unlock = async (input: lib.Input): Promise<any> => {
             return;
         }
 
-        const metadata = JSON.parse(result.repository.ref.target.message);
+        const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
         switch (metadata.state) {
             case "lock":
                 // unlock

@@ -29948,6 +29948,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.check = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
+const lib = __importStar(__nccwpck_require__(5704));
 const check = (input) => __awaiter(void 0, void 0, void 0, function* () {
     const octokit = github.getOctokit(input.githubToken);
     const branch = `${input.keyPrefix}${input.key}`;
@@ -29982,7 +29983,7 @@ const check = (input) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         core.setOutput("result", result.repository.ref.target.message);
-        const metadata = JSON.parse(result.repository.ref.target.message);
+        const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
         core.setOutput("is_locked", metadata.state === "lock");
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
@@ -30024,7 +30025,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getMsg = exports.rootTree = void 0;
+exports.extractMetadata = exports.getMsg = exports.rootTree = void 0;
 const github = __importStar(__nccwpck_require__(3228));
 exports.rootTree = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"; // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
 const getMsg = (input) => {
@@ -30039,9 +30040,18 @@ const getMsg = (input) => {
         metadata.github_actions_workflow_run_url += `?pr=${metadata.pull_request_number}`;
     }
     // Remove links to pull requests because they are noisy in pull request timeline.
-    return JSON.stringify(metadata, null, "  ");
+    return `${input.mode} by ${github.context.actor}: ${input.message}
+${JSON.stringify(metadata, null, "  ")}`;
 };
 exports.getMsg = getMsg;
+const extractMetadata = (message, key) => {
+    const idx = message.indexOf("\n");
+    if (idx === -1) {
+        throw new Error(`The message of key ${key} is invalid`);
+    }
+    return JSON.parse(message.slice(idx + 1));
+};
+exports.extractMetadata = extractMetadata;
 
 
 /***/ }),
@@ -30135,7 +30145,7 @@ const lock = (input) => __awaiter(void 0, void 0, void 0, function* () {
             core.saveState(`got_lock`, true);
             return;
         }
-        const metadata = JSON.parse(result.repository.ref.target.message);
+        const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
         switch (metadata.state) {
             case "lock":
                 // The key has already been locked
@@ -30271,6 +30281,7 @@ const post = (input) => __awaiter(void 0, void 0, void 0, function* () {
     }
     else {
         core.info("unlocking...");
+        input.mode = "unlock";
         (0, unlock_1.unlock)(input);
     }
 });
@@ -30435,7 +30446,7 @@ const unlock = (input) => __awaiter(void 0, void 0, void 0, function* () {
             core.info(`The key ${input.key} has already been unlocked`);
             return;
         }
-        const metadata = JSON.parse(result.repository.ref.target.message);
+        const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
         switch (metadata.state) {
             case "lock":
                 // unlock

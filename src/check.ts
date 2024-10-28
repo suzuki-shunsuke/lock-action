@@ -37,7 +37,7 @@ export const check = async (input: lib.Input): Promise<any> => {
             return;
         }
         core.setOutput("result", result.repository.ref.target.message);
-        const metadata = JSON.parse(result.repository.ref.target.message);
+        const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
         core.setOutput("is_locked", metadata.state === "lock");
     } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
         core.error(`failed to get a key ${input.key}: ${error.message}`);

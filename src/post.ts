@@ -11,6 +11,7 @@ export const post = async (input: lib.Input) => {
         core.info("skip unlocking as it failed to get a lock.");
     } else {
         core.info("unlocking...");
+        input.mode = "unlock";
         unlock(input);
     }
 };

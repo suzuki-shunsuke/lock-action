@@ -50,7 +50,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
             core.saveState(`got_lock`, true);
             return;
         }
-        const metadata = JSON.parse(result.repository.ref.target.message);
+        const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
         switch (metadata.state) {
             case "lock":
                 // The key has already been locked
