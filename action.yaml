@@ -51,6 +51,11 @@ inputs:
       If this is `true`, the lock is released in a post step.
     default: "false"
     required: false
+  ignore_already_locked_error:
+    description: |
+      If this is `true`, the action does not fail when it can't acquire the lock as the key is already being locked.
+    default: "false"
+    required: false
 outputs:
   already_locked:
     description: Whether the key is already locked
