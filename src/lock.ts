@@ -32,7 +32,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
             ref: branch,
         });
 
-        core.debug(`result: ${result}`);
+        core.debug(`result: ${JSON.stringify(result)}`);
         const metadata = JSON.parse(result.repository.ref.target.message);
         switch (metadata.state) {
             case "lock":
