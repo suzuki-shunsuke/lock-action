@@ -17,12 +17,6 @@ Install cmdx by aqua.
 aqua i -l
 ```
 
-After you update code, you have to run the following things.
-
-- Build TypeScript
-- Test JavaScript Action
-- Format code
-
 ## Node.js version management
 
 This project depends on Node.js, and there are a lot of Node.js version managers.
@@ -40,9 +34,11 @@ These versions must be same.
 
 We manage Node.js packages using npm, not [yarn](https://yarnpkg.com/) and [pnpm](https://pnpm.io/).
 
-## `dist` directories aren't committed
+## `dist` directory isn't committed in the main branch and feature branches
 
-We don't manage transpiled JavaScript files in the main branch and feature branches anymore.
+We don't manage transpiled JavaScript files in the main branch and feature branches.
+`dist` directory is added in `pr/<pr number>` and releases automatically by CI.
+You don't have to build TypeScript and commit JavaScript.
 
 ## Test JavaScript Actions
 
