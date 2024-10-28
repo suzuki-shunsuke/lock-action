@@ -30115,6 +30115,7 @@ const lock = (input) => __awaiter(void 0, void 0, void 0, function* () {
             repo: input.repo,
             ref: branch,
         });
+        core.debug(`result: ${result}`);
         const metadata = JSON.parse(result.repository.ref.target.message);
         switch (metadata.state) {
             case "lock":
