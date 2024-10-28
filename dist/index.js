@@ -30483,13 +30483,21 @@ const unlock = (input) => __awaiter(void 0, void 0, void 0, function* () {
                 tree: result.repository.ref.target.tree.oid,
                 parents: [result.repository.ref.target.oid],
             });
-            // TODO error handling if the update isn't fast-forward
-            yield octokit.rest.git.updateRef({
-                owner: input.owner,
-                repo: input.repo,
-                ref: ref,
-                sha: commit.data.sha,
-            });
+            try {
+                yield octokit.rest.git.updateRef({
+                    owner: input.owner,
+                    repo: input.repo,
+                    ref: ref,
+                    sha: commit.data.sha,
+                });
+            }
+            catch (error) {
+                if (!error.message.includes("Update is not a fast forward")) {
+                    throw error;
+                }
+                core.notice(`Failed to unlock the key ${input.key}. Probably the key has already been unlocked`);
+                return;
+            }
             core.info(`The key ${input.key} has been unlocked`);
             return;
         case "unlock":
