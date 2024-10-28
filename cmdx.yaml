@@ -15,7 +15,10 @@ tasks:
   - name: build
     description: build TypeScript
     usage: build TypeScript
-    script: npm run build
+    script: |
+      set -eu
+      npm i
+      npm run build
   - name: update
     short: u
     description: Update
