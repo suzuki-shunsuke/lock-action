@@ -77,7 +77,8 @@ Example 3. Check if the key is being locked
 
 ## Example
 
-[You can try the example workflow](https://github.com/suzuki-shunsuke/lock-action/actions/workflows/example.yaml) ([code](.github/workflows/example.yaml)) by [workflow_dispatch](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
+[We provide an example workflow](https://github.com/suzuki-shunsuke/lock-action/actions/workflows/example.yaml) ([code](.github/workflows/example.yaml)) via [workflow_dispatch](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
+To try this, please [fork this repository](https://github.com/suzuki-shunsuke/lock-action/fork) or copy [the workflow](.github/workflows/example.yaml).
 
 ![](https://storage.googleapis.com/zenn-user-upload/8334fc75cd1d-20241029.png)
 
