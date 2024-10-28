@@ -17,17 +17,25 @@ jobs:
       - run: npm i
       - run: npm run build
 
-      - uses: ./
+      - name: Unlock test-1
+        uses: ./
+        with:
+          mode: unlock
+          key: test-1
+      - name: Lock test-1
+        uses: ./
         with:
           mode: lock
           key: test-1
           post_unlock: "true"
-      - uses: ./
+      - name: Check test-1
+        uses: ./
         id: check
         with:
           mode: check
           key: test-1
-      - run: echo "$OUTPUTS"
+      - name: Check the output of check step
+        run: echo "$OUTPUTS"
         env:
           OUTPUTS: ${{toJSON(steps.check.outputs)}}
 
@@ -45,19 +53,23 @@ jobs:
       - run: npm i
       - run: npm run build
 
-      - uses: ./
+      - name: Check test-2
+        uses: ./
         id: check
         with:
           mode: check
           key: test-2
-      - run: echo "$OUTPUTS"
+      - name: Check the output of check step
+        run: echo "$OUTPUTS"
         env:
           OUTPUTS: ${{toJSON(steps.check.outputs)}}
-      - uses: ./
+      - name: Lock test-2
+        uses: ./
         with:
           mode: lock
           key: test-2
-      - uses: ./
+      - name: Unlock test-2
+        uses: ./
         with:
           mode: unlock
           key: test-2
