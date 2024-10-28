@@ -11,13 +11,13 @@ on:
         options:
           - deploy
           - check
-permissions:
-  contents: write
 jobs:
   deploy:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     if: inputs.action == 'deploy'
+    permissions:
+      contents: write
     steps:
       - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
         with:
@@ -30,6 +30,8 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     if: inputs.action == 'check'
+    permissions:
+      contents: read
     steps:
       - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
         id: check
