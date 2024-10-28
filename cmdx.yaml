@@ -1,0 +1,35 @@
+---
+# cmdx - task runner
+# https://github.com/suzuki-shunsuke/cmdx
+tasks:
+  - name: release
+    short: r
+    description: release the new version
+    usage: release the new version
+    script: gh workflow run release.yaml -f tag={{.version}}
+    args:
+      - name: version
+        required: true
+        validate:
+          - regexp: "^v\\d+\\.\\d+.\\d+(-\\d+)?$"
+  - name: build
+    description: build TypeScript
+    usage: build TypeScript
+    script: npm run build
+  - name: update
+    short: u
+    description: Update
+    usage: Update
+    script: |
+      set -eu
+      npm i
+      npm update
+      npm run build
+  - name: fmt
+    description: Format with prettier
+    usage: Format with prettier
+    script: npm run fmt
+  - name: pinact
+    description: Run pinact
+    usage: Run pinact
+    script: pinact run

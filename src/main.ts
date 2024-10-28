@@ -2,9 +2,9 @@ import * as core from "@actions/core";
 import { main } from "./run";
 
 try {
-    main();
+  main();
 } catch (error) {
-    core.setFailed(
-        error instanceof Error ? error.message : JSON.stringify(error),
-    );
+  core.setFailed(
+    error instanceof Error ? error.message : JSON.stringify(error),
+  );
 }
