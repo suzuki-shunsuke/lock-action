@@ -34,10 +34,17 @@ jobs:
       contains(fromJSON('["lock", "unlock", "check"]'), inputs.action)
     steps:
       - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
+        id: lock
         with:
           mode: ${{inputs.action}}
           key: ${{inputs.key}}
           message: ${{inputs.message}}
+      - run: |
+          echo "::notice::already_locked: $ALREADY_LOCKED" >&2
+        if: inputs.action == 'check'
+        env:
+          ALREADY_LOCKED: ${{steps.lock.outputs.already_locked}}
+          RESULT: ${{steps.lock.outputs.result}}
 
   terraform_apply:
     timeout-minutes: 15
