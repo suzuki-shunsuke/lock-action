@@ -30177,7 +30177,8 @@ message: ${metadata.message}`);
                 owner: input.owner,
                 repo: input.repo,
                 ref: ref,
-                sha: commit.data.sha,
+                // sha: commit.data.sha,
+                sha: "57e90a1640bea1d8ae3f0b2c984905e7625047b5",
             });
             core.info(`The key ${input.key} has been locked`);
             core.saveState(`got_lock`, true);
