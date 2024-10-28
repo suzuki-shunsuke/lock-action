@@ -12,6 +12,5 @@ jobs:
         with:
           mode: lock
           key: example-deploy
-          message: ${{inputs.message}}
       - run: echo "Deploying..."
       - run: sleep 60
