@@ -34,13 +34,15 @@ jobs:
     if: |
       contains(fromJSON('["lock", "unlock", "check"]'), inputs.action)
     steps:
-      - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
+      - name: ${{inputs.action}} ${{inputs.key}}
+        uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
         id: lock
         with:
           mode: ${{inputs.action}}
           key: ${{inputs.key}}
           message: ${{inputs.message}}
-      - run: |
+      - name: Output the result of check
+        run: |
           echo "::notice::already_locked: $ALREADY_LOCKED" >&2
         if: inputs.action == 'check'
         env:
@@ -54,13 +56,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
+      - name: Acquire the lock before running terraform apply
+        uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
         with:
           mode: lock
           key: ${{inputs.key}}
           post_unlock: "true"
-      - run: echo "::notice::Running terraform apply..." >&2
-      - run: sleep 120
+      - name: terraform apply
+        run: |
+          echo "::notice::Running terraform apply..." >&2
+          sleep 120
 
   terraform_plan:
     timeout-minutes: 15
@@ -69,15 +74,18 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
+      - name: Check if the key is being locked
+        uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
         id: check
         with:
           mode: check
           key: ${{inputs.key}}
-      - run: |
+      - name: The job fails if the key is being locked
+        run: |
           echo "::error:: The key $KEY is being locked"
           exit 1
         if: steps.check.outputs.already_locked == 'true'
         env:
           KEY: ${{inputs.key}}
-      - run: echo "::notice::Run terraform plan..." >&2
+      - name: terraform plan
+        run: echo "::notice::Run terraform plan..." >&2
