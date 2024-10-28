@@ -30,17 +30,17 @@ export const check = async (input: lib.Input): Promise<any> => {
             repo: input.repo,
             ref: branch,
         });
-
+        core.debug(`result: ${JSON.stringify(result)}`);
+        if (!result.repository.ref) {
+            core.setOutput("result", {});
+            core.setOutput("is_locked", false);
+            return;
+        }
         core.setOutput("result", result.repository.ref.target.message);
         const metadata = JSON.parse(result.repository.ref.target.message);
         core.setOutput("is_locked", metadata.state === "lock");
     } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
-        if (!(error.status === 404 && error.message.includes("Not Found"))) {
-            core.error(`failed to get a key ${input.key}: ${error.message}`);
-            throw error;
-        }
-        core.setOutput("result", {});
-        core.setOutput("is_locked", false);
-        return;
+        core.error(`failed to get a key ${input.key}: ${error.message}`);
+        throw error;
     }
 };

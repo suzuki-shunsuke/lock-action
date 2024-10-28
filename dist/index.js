@@ -29975,18 +29975,19 @@ const check = (input) => __awaiter(void 0, void 0, void 0, function* () {
             repo: input.repo,
             ref: branch,
         });
+        core.debug(`result: ${JSON.stringify(result)}`);
+        if (!result.repository.ref) {
+            core.setOutput("result", {});
+            core.setOutput("is_locked", false);
+            return;
+        }
         core.setOutput("result", result.repository.ref.target.message);
         const metadata = JSON.parse(result.repository.ref.target.message);
         core.setOutput("is_locked", metadata.state === "lock");
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
-        if (!(error.status === 404 && error.message.includes("Not Found"))) {
-            core.error(`failed to get a key ${input.key}: ${error.message}`);
-            throw error;
-        }
-        core.setOutput("result", {});
-        core.setOutput("is_locked", false);
-        return;
+        core.error(`failed to get a key ${input.key}: ${error.message}`);
+        throw error;
     }
 });
 exports.check = check;
@@ -30116,6 +30117,24 @@ const lock = (input) => __awaiter(void 0, void 0, void 0, function* () {
             ref: branch,
         });
         core.debug(`result: ${JSON.stringify(result)}`);
+        if (!result.repository.ref) {
+            // If the key doesn't exist, create the key
+            const commit = yield octokit.rest.git.createCommit({
+                owner: input.owner,
+                repo: input.repo,
+                message: lib.getMsg(input),
+                tree: lib.rootTree,
+            });
+            yield octokit.rest.git.createRef({
+                owner: input.owner,
+                repo: input.repo,
+                ref: `refs/${ref}`,
+                sha: commit.data.sha,
+            });
+            core.info(`The key ${input.key} has been locked`);
+            core.saveState(`got_lock`, true);
+            return;
+        }
         const metadata = JSON.parse(result.repository.ref.target.message);
         switch (metadata.state) {
             case "lock":
@@ -30147,28 +30166,11 @@ message: ${metadata.message}`);
             default:
                 throw new Error(`The state of key ${input.key} is invalid ${metadata.state}`);
         }
+        return;
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
-        if (!(error.status === 404 && error.message.includes("Not Found"))) {
-            core.error(`failed to get a key ${input.key}: ${error.message}`);
-            throw error;
-        }
-        // If the key doesn't exist, create the key
-        const commit = yield octokit.rest.git.createCommit({
-            owner: input.owner,
-            repo: input.repo,
-            message: lib.getMsg(input),
-            tree: lib.rootTree,
-        });
-        yield octokit.rest.git.createRef({
-            owner: input.owner,
-            repo: input.repo,
-            ref: `refs/${ref}`,
-            sha: commit.data.sha,
-        });
-        core.info(`The key ${input.key} has been locked`);
-        core.saveState(`got_lock`, true);
-        return;
+        core.error(`failed to get a key ${input.key}: ${error.message}`);
+        throw error;
     }
 });
 exports.lock = lock;
@@ -30427,6 +30429,12 @@ const unlock = (input) => __awaiter(void 0, void 0, void 0, function* () {
             repo: input.repo,
             ref: branch,
         });
+        core.debug(`result: ${JSON.stringify(result)}`);
+        if (!result.repository.ref) {
+            // If the key doesn't exist, do nothing
+            core.info(`The key ${input.key} has already been unlocked`);
+            return;
+        }
         const metadata = JSON.parse(result.repository.ref.target.message);
         switch (metadata.state) {
             case "lock":
@@ -30454,13 +30462,8 @@ const unlock = (input) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
-        if (!(error.status === 404 && error.message.includes("Not Found"))) {
-            core.error(`failed to get a key ${input.key}: ${error.message}`);
-            throw error;
-        }
-        // If the key doesn't exist, do nothing
-        core.info(`The key ${input.key} has already been unlocked`);
-        return;
+        core.error(`failed to get a key ${input.key}: ${error.message}`);
+        throw error;
     }
 });
 exports.unlock = unlock;

@@ -30,6 +30,12 @@ export const unlock = async (input: lib.Input): Promise<any> => {
             repo: input.repo,
             ref: branch,
         });
+        core.debug(`result: ${JSON.stringify(result)}`);
+        if (!result.repository.ref) {
+            // If the key doesn't exist, do nothing
+            core.info(`The key ${input.key} has already been unlocked`);
+            return;
+        }
 
         const metadata = JSON.parse(result.repository.ref.target.message);
         switch (metadata.state) {
@@ -57,12 +63,7 @@ export const unlock = async (input: lib.Input): Promise<any> => {
                 throw new Error(`The state of key ${input.key} is invalid ${metadata.state}`);
         }
     } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
-        if (!(error.status === 404 && error.message.includes("Not Found"))) {
-            core.error(`failed to get a key ${input.key}: ${error.message}`);
-            throw error;
-        }
-        // If the key doesn't exist, do nothing
-        core.info(`The key ${input.key} has already been unlocked`);
-        return;
+        core.error(`failed to get a key ${input.key}: ${error.message}`);
+        throw error;
     }
 };
