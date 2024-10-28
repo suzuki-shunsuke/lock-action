@@ -23,6 +23,7 @@ jobs:
         with:
           mode: lock
           key: example-deploy
+          post_unlock: "true"
       - run: echo "::notice::Deploying..." >&2
       - run: sleep 120
 
