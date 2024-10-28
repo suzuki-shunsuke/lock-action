@@ -42,8 +42,6 @@ We manage Node.js packages using npm, not [yarn](https://yarnpkg.com/) and [pnpm
 
 ## `dist` directories aren't committed
 
-[#1913](https://github.com/suzuki-shunsuke/tfaction/pull/1913)
-
 We don't manage transpiled JavaScript files in the main branch and feature branches anymore.
 
 ## Test JavaScript Actions
@@ -59,24 +57,24 @@ cmdx fmt
 ## Manual test
 
 We provide some automatic tests such as unit tests, but sometimes the automatic tests aren't enough so you have to test your changes on your environment.
-You have to build GitHub Actions workflows with tfaction and test your changes on the workflows.
+You have to build GitHub Actions workflows with this action and test your changes on the workflows.
 
 When a pull request is created or updated, the branch `pr/<pull request number>` is also created or updated by GitHub Actions.
 
-- https://github.com/suzuki-shunsuke/tfaction/actions/workflows/create-pr-branch.yaml
-- https://github.com/suzuki-shunsuke/tfaction/blob/main/.github/workflows/create-pr-branch.yaml
+- https://github.com/suzuki-shunsuke/lock-action/actions/workflows/create-pr-branch.yaml
+- https://github.com/suzuki-shunsuke/lock-action/blob/main/.github/workflows/create-pr-branch.yaml
 
 > [!WARNING]
 > These branches aren't created and updated against pull requests from fork repositories.
-> Maintainers have to run [the workflow](https://github.com/suzuki-shunsuke/tfaction/actions/workflows/create-pr-branch.yaml) manually.
+> Maintainers have to run [the workflow](https://github.com/suzuki-shunsuke/lock-action/actions/workflows/create-pr-branch.yaml) manually.
 
 You can test your pull request version by `pr/<pull request number>`.
 
-For example, if you want to test the pull request [#1513](https://github.com/suzuki-shunsuke/tfaction/pull/1513),
-you can update tfaction's version of your workflows to `pr/1513`.
+For example, if you want to test the pull request [#3](https://github.com/suzuki-shunsuke/lock-action/pull/3),
+you can update this action's version of your workflows to `pr/3`.
 
 e.g.
 
 ```yaml
-- uses: suzuki-shunsuke/tfaction/setup@pr/1513
+- uses: suzuki-shunsuke/lock-action@pr/3
 ```

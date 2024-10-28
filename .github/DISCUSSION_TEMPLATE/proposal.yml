@@ -4,7 +4,7 @@ body:
     attributes:
       value: |
         Proposal for other than feature request.
-        For feature request, please use the template [Feature Request](https://github.com/suzuki-shunsuke/tfaction/discussions/new?category=feature-request).
+        For feature request, please use the template [Feature Request](https://github.com/suzuki-shunsuke/lock-action/issues/new?assignees=&labels=enhancement&projects=&template=feature-request.yml).
 
         e.g. Add a new discussion category
 
