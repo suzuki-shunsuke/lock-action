@@ -1,6 +1,6 @@
 ---
 name: Example
-run-name: Example - ${{inputs.mode}} ${{inputs.key}}
+run-name: Example - ${{inputs.action}} ${{inputs.key}}
 on:
   workflow_dispatch:
     inputs:
