@@ -46,12 +46,20 @@ export const lock = async (input: lib.Input): Promise<any> => {
             tree: lib.rootTree,
         });
         // TODO error handling if the key already exists
-        await octokit.rest.git.createRef({
-            owner: input.owner,
-            repo: input.repo,
-            ref: `refs/${ref}`,
-            sha: commit.data.sha,
-        });
+        try {
+            await octokit.rest.git.createRef({
+                owner: input.owner,
+                repo: input.repo,
+                ref: `refs/${ref}`,
+                sha: commit.data.sha,
+            });
+        } catch (error: any) {
+            if (!error.message.includes("Reference already exists")) {
+                throw error;
+            }
+            core.setOutput("already_locked", true);
+            throw new Error(`Failed to acquire lock. Probably the key ${input.key} has already been locked`);
+        }
         core.info(`The key ${input.key} has been locked`);
         core.saveState(`got_lock`, true);
         return;
