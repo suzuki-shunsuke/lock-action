@@ -1,5 +1,9 @@
-name: Lock
-description: Lock
+name: Lock Mechanism
+description: Manage GitHub branch based lock mechanism
+author: Shunsuke Suzuki
+branding:
+  icon: lock
+  color: green
 inputs:
   # Required
   mode:
