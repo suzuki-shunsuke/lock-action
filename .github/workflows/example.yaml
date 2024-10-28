@@ -1,0 +1,73 @@
+---
+name: Example
+run-name: Example - ${{inputs.action}} ${{inputs.key}}
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: action
+        required: true
+        default: lock
+        type: choice
+        options:
+          - lock
+          - unlock
+          - check
+          - terraform_apply
+          - terraform_plan
+      key:
+        description: key
+        required: false
+        default: example
+      message:
+        description: message
+        required: false
+permissions:
+  contents: write
+jobs:
+  lock:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: |
+      contains(fromJSON('["lock", "unlock", "check"]'), inputs.action)
+    steps:
+      - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
+        with:
+          mode: ${{inputs.action}}
+          key: ${{inputs.key}}
+          message: ${{inputs.message}}
+
+  terraform_apply:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    if: inputs.action == 'terraform_apply'
+    permissions:
+      contents: write
+    steps:
+      - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
+        with:
+          mode: lock
+          key: ${{inputs.key}}
+          post_unlock: "true"
+      - run: echo "::notice::Running terraform apply..." >&2
+      - run: sleep 120
+
+  terraform_plan:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    if: inputs.action == 'terraform_plan'
+    permissions:
+      contents: read
+    steps:
+      - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
+        id: check
+        with:
+          mode: check
+          key: ${{inputs.key}}
+      - run: |
+          echo "::error:: The key $KEY is being locked"
+          exit 1
+        if: steps.check.outputs.already_locked == 'true'
+      - run: echo "::notice::Run terraform plan..." >&2
