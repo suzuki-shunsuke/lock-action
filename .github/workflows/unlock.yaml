@@ -1,0 +1,25 @@
+---
+name: Unlock
+run-name: Unlock ${{inputs.key}}
+on:
+  workflow_dispatch:
+    inputs:
+      key:
+        description: key
+        required: true
+      message:
+        description: message
+        required: false
+permissions:
+  contents: write
+jobs:
+  release:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: suzuki-shunsuke/lock-action@v0.1.0
+        with:
+          mode: unlock
+          key: ${{inputs.key}}
+          message: ${{inputs.message}}
+
