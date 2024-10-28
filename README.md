@@ -11,7 +11,7 @@ This action enables you to manage lock in GitHub Actions Workflows.
 
 ## Features
 
-- No dependecy on services such as AWS and GCP
+- No dependency on services such as AWS and GCP
 - No dependency on shell and external commands such as git
 - Use GitHub branches to achieve lock mechanism
 - Manage branches via GitHub API without git command. You don't have to checkout repositories by acitons/checkout
