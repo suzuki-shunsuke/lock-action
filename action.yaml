@@ -40,6 +40,8 @@ inputs:
 outputs:
   already_locked:
     description: Whether the key is already locked
+  result:
+    description: lock result
 runs:
   using: "node20"
   main: "dist/index.js"

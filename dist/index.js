@@ -29979,12 +29979,12 @@ const check = (input) => __awaiter(void 0, void 0, void 0, function* () {
         core.debug(`result: ${JSON.stringify(result)}`);
         if (!result.repository.ref) {
             core.setOutput("result", {});
-            core.setOutput("is_locked", false);
+            core.setOutput("already_locked", false);
             return;
         }
-        core.setOutput("result", result.repository.ref.target.message);
         const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
-        core.setOutput("is_locked", metadata.state === "lock");
+        core.setOutput("result", JSON.stringify(metadata));
+        core.setOutput("already_locked", metadata.state === "lock");
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
         core.error(`failed to get a key ${input.key}: ${error.message}`);
@@ -30149,6 +30149,7 @@ const lock = (input) => __awaiter(void 0, void 0, void 0, function* () {
         switch (metadata.state) {
             case "lock":
                 // The key has already been locked
+                core.setOutput("already_locked", true);
                 core.error(`The key ${input.key} has already been locked
 actor: ${metadata.actor}
 date: ${metadata.committedDate}

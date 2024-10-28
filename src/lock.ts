@@ -54,6 +54,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
         switch (metadata.state) {
             case "lock":
                 // The key has already been locked
+                core.setOutput("already_locked", true);
                 core.error(`The key ${input.key} has already been locked
 actor: ${metadata.actor}
 date: ${metadata.committedDate}
