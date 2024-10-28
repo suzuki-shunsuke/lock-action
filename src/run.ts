@@ -18,6 +18,7 @@ export const main = async () => {
       core.getInput("repo_name") ||
       (process.env.GITHUB_REPOSITORY || "").split("/")[1],
     message: core.getInput("message"),
+    ignoreAlreadyLockedError: core.getBooleanInput("ignore_already_locked_error"),
   });
 };
 

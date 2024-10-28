@@ -12,6 +12,7 @@ export type Input = {
   owner: string;
   repo: string;
   message: string;
+  ignoreAlreadyLockedError: boolean;
 };
 
 export const getMsg = (input: Input): string => {

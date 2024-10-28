@@ -61,6 +61,10 @@ export const lock = async (input: lib.Input): Promise<any> => {
         throw error;
       }
       core.setOutput("already_locked", true);
+      if (input.ignoreAlreadyLockedError) {
+        core.info(`Failed to acquire lock. Probably the key ${input.key} has already been locked`);
+        return;
+      }
       throw new Error(
         `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
       );
@@ -104,6 +108,10 @@ message: ${metadata.message}`);
           throw error;
         }
         core.setOutput("already_locked", true);
+        if (input.ignoreAlreadyLockedError) {
+          core.info(`The key ${input.key} has already been locked.`);
+          return;
+        }
         throw new Error(
           `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
         );
