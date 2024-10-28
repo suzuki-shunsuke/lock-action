@@ -1,20 +1,19 @@
 name: Lock
 description: Lock
 inputs:
-  branch:
+  mode:
     description: |
-      lock branch
+      lock, unlock, check
     required: true
-  branch_prefix:
+  key:
     description: |
-      lock branch prefix
+      lock key
+    required: true
+  key_prefix:
+    description: |
+      lock key prefix
     required: false
     default: "lock__"
-  history_branch_prefix:
-    description: |
-      history branch prefix
-    required: false
-    default: "history_lock__"
   github_token:
     description: |
       GitHub Access Token
@@ -31,12 +30,7 @@ inputs:
     required: false
   message:
     description: |
-      commit message.
-    required: false
-  disable_history:
-    description: |
-      Disable history.
-    default: "false"
+      message.
     required: false
   post_unlock:
     description: |
@@ -45,8 +39,8 @@ inputs:
     required: false
 outputs:
   already_locked:
-    description: Whether the branch is already locked
+    description: Whether the key is already locked
 runs:
   using: "node20"
-  main: "dist/lock/index.js"
-  post: "dist/unlock/index.js"
+  main: "dist/main.js"
+  post: "dist/post.js"
