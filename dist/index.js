@@ -30125,7 +30125,7 @@ const lock = (input) => __awaiter(void 0, void 0, void 0, function* () {
 }`, {
             owner: input.owner,
             repo: input.repo,
-            ref: "dummy-3",
+            ref: branch,
         });
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266
@@ -30141,7 +30141,6 @@ const lock = (input) => __awaiter(void 0, void 0, void 0, function* () {
             message: lib.getMsg(input),
             tree: lib.rootTree,
         });
-        // TODO error handling if the key already exists
         try {
             yield octokit.rest.git.createRef({
                 owner: input.owner,

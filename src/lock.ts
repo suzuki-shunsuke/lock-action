@@ -30,7 +30,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
 }`, {
             owner: input.owner,
             repo: input.repo,
-            ref: "dummy-3",
+            ref: branch,
         });
     } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
         core.error(`failed to get a key ${input.key}: ${error.message}`);
@@ -45,7 +45,6 @@ export const lock = async (input: lib.Input): Promise<any> => {
             message: lib.getMsg(input),
             tree: lib.rootTree,
         });
-        // TODO error handling if the key already exists
         try {
             await octokit.rest.git.createRef({
                 owner: input.owner,
