@@ -7,9 +7,10 @@ export const lock = async (input: lib.Input): Promise<any> => {
 
     const branch = `${input.keyPrefix}${input.key}`;
     const ref = `heads/${branch}`;
+    let result: any;
     try {
         // Get the branch
-        const result = await octokit.graphql<any>(`query($owner: String!, $repo: String!, $ref: String!) {
+        result = await octokit.graphql<any>(`query($owner: String!, $repo: String!, $ref: String!) {
   repository(owner: $owner, name: $repo) {
     ref(qualifiedName: $ref) {
       prefix
@@ -31,60 +32,62 @@ export const lock = async (input: lib.Input): Promise<any> => {
             repo: input.repo,
             ref: branch,
         });
-        core.debug(`result: ${JSON.stringify(result)}`);
-        if (!result.repository.ref) {
-            // If the key doesn't exist, create the key
+    } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
+        core.error(`failed to get a key ${input.key}: ${error.message}`);
+        throw error;
+    }
+    core.debug(`result: ${JSON.stringify(result)}`);
+    if (!result.repository.ref) {
+        // If the key doesn't exist, create the key
+        const commit = await octokit.rest.git.createCommit({
+            owner: input.owner,
+            repo: input.repo,
+            message: lib.getMsg(input),
+            tree: lib.rootTree,
+        });
+        // TODO error handling if the key already exists
+        await octokit.rest.git.createRef({
+            owner: input.owner,
+            repo: input.repo,
+            ref: `refs/${ref}`,
+            sha: commit.data.sha,
+        });
+        core.info(`The key ${input.key} has been locked`);
+        core.saveState(`got_lock`, true);
+        return;
+    }
+    const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
+    switch (metadata.state) {
+        case "lock":
+            // The key has already been locked
+            core.setOutput("already_locked", true);
+            core.error(`The key ${input.key} has already been locked
+actor: ${metadata.actor}
+date: ${metadata.committedDate}
+workflow: ${metadata.github_actions_workflow_run_url}
+message: ${metadata.message}`);
+            throw new Error(`The key ${input.key} has already been locked`);
+        case "unlock":
+            // lock
             const commit = await octokit.rest.git.createCommit({
                 owner: input.owner,
                 repo: input.repo,
                 message: lib.getMsg(input),
-                tree: lib.rootTree,
+                tree: result.repository.ref.target.tree.oid,
+                parents: [result.repository.ref.target.oid],
             });
-            await octokit.rest.git.createRef({
+            // TODO error handling if the update isn't fast-forward
+            await octokit.rest.git.updateRef({
                 owner: input.owner,
                 repo: input.repo,
-                ref: `refs/${ref}`,
+                ref: ref,
                 sha: commit.data.sha,
             });
             core.info(`The key ${input.key} has been locked`);
             core.saveState(`got_lock`, true);
             return;
-        }
-        const metadata = lib.extractMetadata(result.repository.ref.target.message, input.key);
-        switch (metadata.state) {
-            case "lock":
-                // The key has already been locked
-                core.setOutput("already_locked", true);
-                core.error(`The key ${input.key} has already been locked
-actor: ${metadata.actor}
-date: ${metadata.committedDate}
-workflow: ${metadata.github_actions_workflow_run_url}
-message: ${metadata.message}`);
-                throw new Error(`The key ${input.key} has already been locked`);
-            case "unlock":
-                // lock
-                const commit = await octokit.rest.git.createCommit({
-                    owner: input.owner,
-                    repo: input.repo,
-                    message: lib.getMsg(input),
-                    tree: result.repository.ref.target.tree.oid,
-                    parents: [result.repository.ref.target.oid],
-                });
-                await octokit.rest.git.updateRef({
-                    owner: input.owner,
-                    repo: input.repo,
-                    ref: ref,
-                    sha: commit.data.sha,
-                });
-                core.info(`The key ${input.key} has been locked`);
-                core.saveState(`got_lock`, true);
-                return;
-            default:
-                throw new Error(`The state of key ${input.key} is invalid ${metadata.state}`);
-        }
-        return;
-    } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
-        core.error(`failed to get a key ${input.key}: ${error.message}`);
-        throw error;
+        default:
+            throw new Error(`The state of key ${input.key} is invalid ${metadata.state}`);
     }
+    return;
 };
