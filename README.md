@@ -100,6 +100,11 @@ You can see when and who (actor, workflow run, pull request number) locks or unl
 
 ![](https://storage.googleapis.com/zenn-user-upload/d5bb8fcd470e-20241028.png)
 
+Example:
+
+- A list of branches: https://github.com/suzuki-shunsuke/lock-action/branches/all?query=lock__&lastTab=overview
+- https://github.com/suzuki-shunsuke/lock-action/commits/lock__test-1/
+
 ## Inputs / Outputs
 
 Please see [action.yaml](action.yaml)
