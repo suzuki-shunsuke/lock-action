@@ -1,5 +1,6 @@
 ---
 name: Example deploy / check
+run-name: Example ${{inputs.action}}
 on:
   workflow_dispatch:
     inputs:
