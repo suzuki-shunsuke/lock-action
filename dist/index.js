@@ -30125,7 +30125,7 @@ const lock = (input) => __awaiter(void 0, void 0, void 0, function* () {
 }`, {
             owner: input.owner,
             repo: input.repo,
-            ref: branch,
+            ref: "dummy-3",
         });
     }
     catch (error) { // https://github.com/octokit/rest.js/issues/266

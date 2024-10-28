@@ -30,7 +30,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
 }`, {
             owner: input.owner,
             repo: input.repo,
-            ref: branch,
+            ref: "dummy-3",
         });
     } catch (error: any) { // https://github.com/octokit/rest.js/issues/266
         core.error(`failed to get a key ${input.key}: ${error.message}`);
