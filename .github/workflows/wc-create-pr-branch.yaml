@@ -69,6 +69,7 @@ jobs:
       - run: git fetch origin "pull/$PR_NUMBER/merge:$PR_BRANCH"
       - run: git checkout "$PR_BRANCH"
 
+      - run: npm i
       - run: npm run build
       - run: find ./*/dist/* -print0 | xargs -0 git add -f
       - run: |
