@@ -41,15 +41,15 @@ By default, this action doesn't release a lock automatically even after the job 
 If you want to release a lock automatically after the job, you can use the input `post_unlock: "true"`.
 
 The action fails if the key has already been locked.
-If you want to continue jobs, you can ignore the failure using [continue-on-error](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idstepscontinue-on-error).
+If you want to continue jobs, you can ignore the failure using the input `ignore_already_locked_error`.
 
 ```yaml
 - uses: suzuki-shunsuke/lock-action@v0.1.0
   id: lock
-  continue-on-error: true
   with:
     key: foo
     mode: lock
+    ignore_already_locked_error: "true"
 - run: echo "already locked"
   if: steps.lock.outputs.already_locked == 'true' # Refer the result via outputs
 ```
