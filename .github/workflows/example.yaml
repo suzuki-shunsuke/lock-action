@@ -26,6 +26,7 @@ permissions:
   contents: write
 jobs:
   lock:
+    name: ${{inputs.action}}
     timeout-minutes: 15
     runs-on: ubuntu-latest
     permissions:
@@ -77,4 +78,6 @@ jobs:
           echo "::error:: The key $KEY is being locked"
           exit 1
         if: steps.check.outputs.already_locked == 'true'
+        env:
+          KEY: ${{inputs.key}}
       - run: echo "::notice::Run terraform plan..." >&2
