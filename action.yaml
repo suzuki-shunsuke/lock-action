@@ -42,5 +42,5 @@ outputs:
     description: Whether the key is already locked
 runs:
   using: "node20"
-  main: "dist/main.js"
-  post: "dist/post.js"
+  main: "dist/index.js"
+  post: "dist/index.js"
