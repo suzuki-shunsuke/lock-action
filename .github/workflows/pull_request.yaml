@@ -1,4 +1,4 @@
-name: test
+name: pull request
 
 on: pull_request
 
@@ -42,6 +42,7 @@ jobs:
       - ghalint
       - create-pr-branch
       - format
+      - test
     permissions: {}
     if: failure()
     steps:
@@ -88,3 +89,7 @@ jobs:
     secrets:
       gh_app_id: ${{secrets.APP_ID}}
       gh_app_private_key: ${{secrets.APP_PRIVATE_KEY}}
+
+  test:
+    uses: ./.github/workflows/wc-test.yaml
+    permissions: {}
