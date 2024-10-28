@@ -22,4 +22,3 @@ jobs:
           mode: unlock
           key: ${{inputs.key}}
           message: ${{inputs.message}}
-
