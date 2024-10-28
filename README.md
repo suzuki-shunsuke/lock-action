@@ -75,6 +75,18 @@ Example 3. Check if the key is being locked
   if: steps.check.outputs.already_locked == 'true' # Refer the result via outputs
 ```
 
+## Example
+
+[You can try the example workflow](https://github.com/suzuki-shunsuke/lock-action/actions/workflows/example.yaml) ([code](.github/workflows/example.yaml)) by [workflow_dispatch](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
+
+![](https://storage.googleapis.com/zenn-user-upload/8334fc75cd1d-20241029.png)
+
+1. lock: Lock the given key
+1. unlock: Unlock the given key
+1. check: Check if the key is being locked
+1. terraform_plan: Check if the key is being locked before running terraform plan. The job would fail if the key is being locked.
+1. terraform_apply: Lock the key for 120 seconds and release the lock. The job would fail if the key is being locked.
+
 ## How does it work?
 
 This action creates and updates GitHub branches internally.
