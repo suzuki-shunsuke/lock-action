@@ -8,7 +8,7 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: suzuki-shunsuke/lock-action@v0.1.0
+      - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
         with:
           mode: lock
           key: example-deploy
