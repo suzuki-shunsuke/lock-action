@@ -1,0 +1,21 @@
+---
+name: Example check
+on: workflow_dispatch
+permissions:
+  contents: read
+env:
+  KEY: example-deploy
+jobs:
+  release:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: suzuki-shunsuke/lock-action@7ce9bcf15a765f862751c469e48877e590c1e532 # v0.1.0
+        id: check
+        with:
+          mode: check
+          key: example-deploy
+      - run: |
+          echo "::error:: The key $KEY is being locked"
+          exit 1
+        if: steps.check.outputs.already_locked == 'true'
