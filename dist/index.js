@@ -30342,10 +30342,13 @@ const run = (input) => __awaiter(void 0, void 0, void 0, function* () {
     switch (input.mode) {
         case "lock":
             lock.lock(input);
+            break;
         case "unlock":
             unlock.unlock(input);
+            break;
         case "check":
             check.check(input);
+            break;
         default:
             throw new Error(`Invalid mode: ${input.mode}`);
     }
@@ -30441,6 +30444,7 @@ const unlock = (input) => __awaiter(void 0, void 0, void 0, function* () {
                     sha: commit.data.sha,
                 });
                 core.info(`The key ${input.key} has been unlocked`);
+                return;
             case "unlock":
                 core.info(`The key ${input.key} has already been unlocked`);
                 return;

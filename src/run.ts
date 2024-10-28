@@ -27,10 +27,13 @@ const run = async (input: lib.Input) => {
     switch (input.mode) {
         case "lock":
             lock.lock(input);
+            break;
         case "unlock":
             unlock.unlock(input);
+            break;
         case "check":
             check.check(input);
+            break;
         default:
             throw new Error(`Invalid mode: ${input.mode}`);
     }

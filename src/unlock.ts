@@ -49,6 +49,7 @@ export const unlock = async (input: lib.Input): Promise<any> => {
                     sha: commit.data.sha,
                 });
                 core.info(`The key ${input.key} has been unlocked`);
+                return;
             case "unlock":
                 core.info(`The key ${input.key} has already been unlocked`);
                 return;
