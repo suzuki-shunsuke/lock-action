@@ -1,47 +1,57 @@
 name: Lock
 description: Lock
 inputs:
+  # Required
   mode:
     description: |
-      lock, unlock, check
+      One of the following values:
+      - lock: Lock the key
+      - unlock: Unlock the key
+      - check: Check if the key is being locked
     required: true
   key:
     description: |
-      lock key
+      A lock key. This is useful to manage locks by service and environment.
     required: true
+
+  # Optional
   key_prefix:
     description: |
-      lock key prefix
+      A lock key prefix.
+      This action creates and updates the branch `${keyPrefix}${key}` for each key.
     required: false
     default: "lock__"
   github_token:
     description: |
-      GitHub Access Token
-      contents:write - Create branches and commits
+      GitHub Access Token.
+      This is used to create branches and commits.
+      The permission `contents:write` is required.
     required: false
     default: ${{ github.token }}
   repo_owner:
     description: |
-      Repository owner.
+      The repository owner where this action creates branches.
+      The default value is `$GITHUB_REPOSITORY_OWNER`.
     required: false
   repo_name:
     description: |
-      Repository name.
+      The repository name where this action creates branches.
+      The default value is the repository name of `$GITHUB_REPOSITORY`.
     required: false
   message:
     description: |
-      message.
+      This is used to record the reason and context of lock and unlock operation.
     required: false
   post_unlock:
     description: |
-      Whether unlock the key in the post step.
+      If this is `true`, the lock is released in a post step.
     default: "false"
     required: false
 outputs:
   already_locked:
     description: Whether the key is already locked
   result:
-    description: lock result
+    description: The lock result
 runs:
   using: "node20"
   main: "dist/index.js"
