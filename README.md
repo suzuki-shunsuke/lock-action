@@ -82,14 +82,29 @@ Example 3. Check if the key is being locked
 > So you can't specify `main` and feature branches as versions.
 >
 > ```yaml
-> uses: suzuki-shunsuke/lock-action@main # This never works as dist/index.js doesn't exist.
+> # This never works as dist/index.js doesn't exist.
+> uses: suzuki-shunsuke/lock-action@main
 > ```
->
-> We add them in the following versions by CI.
+
+The following versions are available.
 
 1. [Release versions](https://github.com/suzuki-shunsuke/lock-action/releases)
+
+```yaml
+uses: suzuki-shunsuke/lock-action@v0.1.0
+```
+
 2. [Pull Request versions](https://github.com/suzuki-shunsuke/lock-action/branches/all?query=pr%2F&lastTab=overview): These versions are removed when we feel unnecessary. These versions are used to test pull requests.
+
+```yaml
+uses: suzuki-shunsuke/lock-action@pr/37
+```
+
 3. [latest version](https://github.com/suzuki-shunsuke/lock-action/tree/latest): [This version is built by CI when the main branch is updated](https://github.com/suzuki-shunsuke/lock-action/blob/latest/.github/workflows/main.yaml)
+
+```yaml
+uses: suzuki-shunsuke/lock-action@latest
+```
 
 ## Example
 
