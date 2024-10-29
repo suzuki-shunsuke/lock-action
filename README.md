@@ -106,7 +106,7 @@ uses: suzuki-shunsuke/lock-action@pr/37
 uses: suzuki-shunsuke/lock-action@latest
 ```
 
-Pull Request versions and the latest version are unstable.
+Pull Request versions and the latest branch are unstable.
 These versions are for testing.
 You should use the latest release version in production.
 
