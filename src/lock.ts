@@ -119,7 +119,9 @@ message: ${metadata.message}`);
         }
         core.setOutput("already_locked", true);
         if (input.ignoreAlreadyLockedError) {
-          core.info(`Failed to acquire lock. Probably the key ${input.key} has already been locked`);
+          core.info(
+            `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
+          );
           return;
         }
         throw new Error(
