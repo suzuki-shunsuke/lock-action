@@ -41,6 +41,7 @@ jobs:
           mode: ${{inputs.action}}
           key: ${{inputs.key}}
           message: ${{inputs.message}}
+          ignore_already_locked_error: "true"
       - name: Output the result of check
         run: |
           echo "::notice::already_locked: $ALREADY_LOCKED" >&2
