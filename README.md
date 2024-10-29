@@ -75,6 +75,37 @@ Example 3. Check if the key is being locked
   if: steps.check.outputs.already_locked == 'true' # Refer the result via outputs
 ```
 
+## Available versions
+
+> [!CAUTION]
+> We don't add `dist/*.js` in the main branch and feature branches.
+> So you can't specify `main` and feature branches as versions.
+>
+> ```yaml
+> # This never works as dist/index.js doesn't exist.
+> uses: suzuki-shunsuke/lock-action@main
+> ```
+
+The following versions are available.
+
+1. [Release versions](https://github.com/suzuki-shunsuke/lock-action/releases)
+
+```yaml
+uses: suzuki-shunsuke/lock-action@v0.1.0
+```
+
+2. [Pull Request versions](https://github.com/suzuki-shunsuke/lock-action/branches/all?query=pr%2F&lastTab=overview): These versions are removed when we feel unnecessary. These versions are used to test pull requests.
+
+```yaml
+uses: suzuki-shunsuke/lock-action@pr/37
+```
+
+3. [latest version](https://github.com/suzuki-shunsuke/lock-action/tree/latest): [This version is built by CI when the main branch is updated](https://github.com/suzuki-shunsuke/lock-action/blob/latest/.github/workflows/main.yaml)
+
+```yaml
+uses: suzuki-shunsuke/lock-action@latest
+```
+
 ## Example
 
 [We provide an example workflow](https://github.com/suzuki-shunsuke/lock-action/actions/workflows/example.yaml) ([code](.github/workflows/example.yaml)) via [workflow_dispatch](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
