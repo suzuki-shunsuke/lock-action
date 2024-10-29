@@ -84,12 +84,16 @@ export const lock = async (input: lib.Input): Promise<any> => {
       // The key has already been locked
       core.setOutput("already_locked", true);
       if (input.ignoreAlreadyLockedError) {
-        core.info(`The key ${input.key} has already been locked.`);
+        core.info(`The key ${input.key} has already been locked
+actor: ${metadata.actor}
+datetime: ${result.repository.ref.target.committedDate}
+workflow: ${metadata.github_actions_workflow_run_url}
+message: ${metadata.message}`);
         return;
       }
       core.error(`The key ${input.key} has already been locked
 actor: ${metadata.actor}
-date: ${metadata.committedDate}
+datetime: ${result.repository.ref.target.committedDate}
 workflow: ${metadata.github_actions_workflow_run_url}
 message: ${metadata.message}`);
       throw new Error(`The key ${input.key} has already been locked`);
@@ -115,7 +119,9 @@ message: ${metadata.message}`);
         }
         core.setOutput("already_locked", true);
         if (input.ignoreAlreadyLockedError) {
-          core.info(`The key ${input.key} has already been locked.`);
+          core.info(
+            `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
+          );
           return;
         }
         throw new Error(
