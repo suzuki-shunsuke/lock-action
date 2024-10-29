@@ -19,6 +19,7 @@ export const check = async (input: lib.Input): Promise<any> => {
         ... on Commit {
           oid
           message
+          committedDate
           tree {
             oid
           }
@@ -43,6 +44,8 @@ export const check = async (input: lib.Input): Promise<any> => {
       result.repository.ref.target.message,
       input.key,
     );
+
+    metadata.datetime = result.repository.ref.target.committedDate;
     core.setOutput("result", JSON.stringify(metadata));
     core.setOutput("already_locked", metadata.state === "lock");
   } catch (error: any) {
