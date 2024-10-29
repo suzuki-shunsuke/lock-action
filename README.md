@@ -170,7 +170,7 @@ There are some alternatives, but they don't meet our needs.
 
 https://github.com/github/lock
 
-This is an official action. We need a more simple action.
+This is an official action. We need a simpler action.
 
 https://github.com/ben-z/gh-action-mutex
 
