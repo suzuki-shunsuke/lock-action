@@ -28,7 +28,7 @@ jobs:
     permissions:
       contents: write # For lock and unlock
     steps:
-      - uses: suzuki-shunsuke/lock-action@v0.1.0
+      - uses: suzuki-shunsuke/lock-action@v0.1.1
         id: lock
         with:
           mode: lock # mandatory
@@ -44,7 +44,7 @@ The action fails if the key has already been locked.
 If you want to continue jobs, you can ignore the failure using the input `ignore_already_locked_error`.
 
 ```yaml
-- uses: suzuki-shunsuke/lock-action@v0.1.0
+- uses: suzuki-shunsuke/lock-action@v0.1.1
   id: lock
   with:
     key: foo
@@ -57,7 +57,7 @@ If you want to continue jobs, you can ignore the failure using the input `ignore
 Example 2. Unlock
 
 ```yaml
-- uses: suzuki-shunsuke/lock-action@v0.1.0
+- uses: suzuki-shunsuke/lock-action@v0.1.1
   with:
     mode: unlock
     key: foo
@@ -66,7 +66,7 @@ Example 2. Unlock
 Example 3. Check if the key is being locked
 
 ```yaml
-- uses: suzuki-shunsuke/lock-action@v0.1.0
+- uses: suzuki-shunsuke/lock-action@v0.1.1
   id: check
   with:
     mode: check
@@ -91,7 +91,7 @@ The following versions are available.
 1. [Release versions](https://github.com/suzuki-shunsuke/lock-action/releases)
 
 ```yaml
-uses: suzuki-shunsuke/lock-action@v0.1.0
+uses: suzuki-shunsuke/lock-action@v0.1.1
 ```
 
 2. [Pull Request versions](https://github.com/suzuki-shunsuke/lock-action/branches/all?query=pr%2F&lastTab=overview): These versions are removed when we feel unnecessary. These versions are used to test pull requests.
@@ -126,8 +126,8 @@ To try this, please [fork this repository](https://github.com/suzuki-shunsuke/lo
 ## How does it work?
 
 This action creates and updates GitHub branches internally.
-It manages the state of the key `key` using commit messages of the branch `${keyPrefix}${key}`.
-The default branch of `keyPrefix` is `lock__`, but you can change this by the input `key_prefix`.
+It manages the state of the key `key` using commit messages of the branch `${{inputs.key_prefix}}${{inputs.key}}`.
+The default value of `key_prefix` is `lock__`, but you can change this by the input `key_prefix`.
 
 The commit messages are like this:
 
@@ -156,6 +156,13 @@ Example:
 ## Inputs / Outputs
 
 Please see [action.yaml](action.yaml)
+
+## Restriction of key_prefix and key inputs
+
+This action creates branches `${{inputs.key_prefix}}${{inputs.key}}`, so `${{inputs.key_prefix}}${{inputs.key}}` must follow the rule of Git and GitHub branches.
+
+- https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
+- https://git-scm.com/docs/git-check-ref-format
 
 ## Alternatives
 
