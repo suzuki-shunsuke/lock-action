@@ -100,11 +100,15 @@ uses: suzuki-shunsuke/lock-action@v0.1.0
 uses: suzuki-shunsuke/lock-action@pr/37
 ```
 
-3. [latest version](https://github.com/suzuki-shunsuke/lock-action/tree/latest): [This version is built by CI when the main branch is updated](https://github.com/suzuki-shunsuke/lock-action/blob/latest/.github/workflows/main.yaml)
+3. [latest branch](https://github.com/suzuki-shunsuke/lock-action/tree/latest): [This branch is built by CI when the main branch is updated](https://github.com/suzuki-shunsuke/lock-action/blob/latest/.github/workflows/main.yaml). Note that we push commits to the latest branch forcibly.
 
 ```yaml
 uses: suzuki-shunsuke/lock-action@latest
 ```
+
+Pull Request versions and the latest branch are unstable.
+These versions are for testing.
+You should use the latest release version in production.
 
 ## Example
 
