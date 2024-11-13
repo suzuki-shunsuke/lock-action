@@ -47,6 +47,9 @@ const _lock = async (input: lib.Input): Promise<any> => {
     if (result === Result.Locked) {
       return result;
     }
+    if (result === Result.AlreadyLocked && input.ignoreAlreadyLockedError) {
+      return result;
+    }
     if (now - startTime > input.maxWaitSeconds * 1000) {
       return result;
     }
