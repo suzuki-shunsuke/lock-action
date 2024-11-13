@@ -9,8 +9,30 @@ enum Result {
   FailedToGetLock,
 }
 
-export const lock = async (input: lib.Input): Promise<any> => {
+export const lock = async (input: lib.Input) => {
   let result = await _lock(input);
+  switch (result) {
+    case Result.AlreadyLocked:
+      core.info(`The key ${input.key} has already been locked`);
+      core.setOutput("already_locked", true);
+      if (input.ignoreAlreadyLockedError) {
+        core.info(`The key ${input.key} has already been locked`);
+        return;
+      }
+      throw new Error(`The key ${input.key} has already been locked`);
+    case Result.Locked:
+      core.info(`The key ${input.key} has been locked`);
+      core.saveState(`got_lock`, true);
+      return;
+    case Result.FailedToGetLock:
+      throw new Error(
+        `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
+      );
+  }
+};
+
+const _lock = async (input: lib.Input): Promise<any> => {
+  let result = await __lock(input);
   if (input.maxWaitSeconds === 0) {
     return result;
   }
@@ -23,7 +45,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
     Date.now(),
   )) {
     const now = Date.now();
-    result = await _lock(input);
+    result = await __lock(input);
     if (result === Result.Locked) {
       return result;
     }
@@ -35,7 +57,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
   return result;
 };
 
-const _lock = async (input: lib.Input): Promise<Result> => {
+const __lock = async (input: lib.Input): Promise<Result> => {
   const branch = `${input.keyPrefix}${input.key}`;
   const ref = `heads/${branch}`;
   let result: any;
@@ -58,19 +80,13 @@ const _lock = async (input: lib.Input): Promise<Result> => {
   );
   switch (metadata.state) {
     case "lock":
-      if (input.maxWaitSeconds !== 0) {
-        for await (const startTime of setInterval(
-          input.waitIntervalSeconds * 1000,
-          Date.now(),
-        )) {
-          const now = Date.now();
-          if (now - startTime > input.maxWaitSeconds * 1000) {
-            break;
-          }
-          core.info(`The key ${input.key} has already been locked. Waiting...`);
-        }
-      }
-      handleCaseLock(input, metadata, result);
+      const message = `The key ${input.key} has already been locked
+actor: ${metadata.actor}
+datetime: ${result.repository.ref.target.committedDate}
+workflow: ${metadata.github_actions_workflow_run_url}
+message: ${metadata.message}`;
+      core.info(message);
+      return Result.AlreadyLocked;
     case "unlock":
       return createLock(input, ref, result);
     default:
@@ -130,40 +146,9 @@ const createKey = async (input: lib.Input, ref: string): Promise<Result> => {
     if (!error.message.includes("Reference already exists")) {
       throw error;
     }
-    core.setOutput("already_locked", true);
-    if (input.ignoreAlreadyLockedError) {
-      core.info(
-        `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
-      );
-      return Result.FailedToGetLock;
-    }
-    throw new Error(
-      `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
-    );
     return Result.FailedToGetLock;
   }
-  core.info(`The key ${input.key} has been locked`);
-  core.saveState(`got_lock`, true);
   return Result.Locked;
-};
-
-const handleCaseLock = (input: lib.Input, metadata: any, result: any) => {
-  // The key has already been locked
-  core.setOutput("already_locked", true);
-  if (input.ignoreAlreadyLockedError) {
-    core.info(`The key ${input.key} has already been locked
-actor: ${metadata.actor}
-datetime: ${result.repository.ref.target.committedDate}
-workflow: ${metadata.github_actions_workflow_run_url}
-message: ${metadata.message}`);
-    return;
-  }
-  core.error(`The key ${input.key} has already been locked
-actor: ${metadata.actor}
-datetime: ${result.repository.ref.target.committedDate}
-workflow: ${metadata.github_actions_workflow_run_url}
-message: ${metadata.message}`);
-  throw new Error(`The key ${input.key} has already been locked`);
 };
 
 const createLock = async (
@@ -191,18 +176,7 @@ const createLock = async (
     if (!error.message.includes("Update is not a fast forward")) {
       throw error;
     }
-    core.setOutput("already_locked", true);
-    if (input.ignoreAlreadyLockedError) {
-      core.info(
-        `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
-      );
-      return Result.FailedToGetLock;
-    }
-    throw new Error(
-      `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
-    );
+    return Result.FailedToGetLock;
   }
-  core.info(`The key ${input.key} has been locked`);
-  core.saveState(`got_lock`, true);
   return Result.Locked;
 };
