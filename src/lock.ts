@@ -8,7 +8,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
   let result: any;
   try {
     // Get the branch
-    result = await getKey(input, ref);
+    result = await getKey(input, branch);
   } catch (error: any) {
     // https://github.com/octokit/rest.js/issues/266
     core.error(`failed to get a key ${input.key}: ${error.message}`);
