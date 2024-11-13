@@ -16,7 +16,6 @@ export const lock = async (input: lib.Input) => {
       core.info(`The key ${input.key} has already been locked`);
       core.setOutput("already_locked", true);
       if (input.ignoreAlreadyLockedError) {
-        core.info(`The key ${input.key} has already been locked`);
         return;
       }
       throw new Error(`The key ${input.key} has already been locked`);
