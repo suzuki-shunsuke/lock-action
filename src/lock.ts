@@ -13,7 +13,6 @@ export const lock = async (input: lib.Input) => {
   let result = await _lock(input);
   switch (result) {
     case Result.AlreadyLocked:
-      core.info(`The key ${input.key} has already been locked`);
       core.setOutput("already_locked", true);
       if (input.ignoreAlreadyLockedError) {
         return;
