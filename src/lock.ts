@@ -17,12 +17,16 @@ export const lock = async (input: lib.Input) => {
       if (input.ignoreAlreadyLockedError) {
         return;
       }
+      core.error(`The key ${input.key} has already been locked`);
       throw new Error(`The key ${input.key} has already been locked`);
     case Result.Locked:
       core.info(`The key ${input.key} has been locked`);
       core.saveState(`got_lock`, true);
       return;
     case Result.FailedToGetLock:
+      core.error(
+        `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
+      );
       throw new Error(
         `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
       );
