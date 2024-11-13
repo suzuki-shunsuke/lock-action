@@ -18,13 +18,16 @@ export const lock = async (input: lib.Input): Promise<any> => {
     return result;
   }
   core.info(`The key ${input.key} has already been locked. Waiting...`);
-  for await (const startTime of setInterval(input.waitIntervalSeconds * 1000, Date.now())) {
+  for await (const startTime of setInterval(
+    input.waitIntervalSeconds * 1000,
+    Date.now(),
+  )) {
     const now = Date.now();
     result = await _lock(input);
     if (result === Result.Locked) {
       return result;
     }
-    if ((now - startTime) > input.maxWaitSeconds * 1000) {
+    if (now - startTime > input.maxWaitSeconds * 1000) {
       return result;
     }
     core.info(`The key ${input.key} has already been locked. Waiting...`);
@@ -56,9 +59,12 @@ const _lock = async (input: lib.Input): Promise<Result> => {
   switch (metadata.state) {
     case "lock":
       if (input.maxWaitSeconds !== 0) {
-        for await (const startTime of setInterval(input.waitIntervalSeconds * 1000, Date.now())) {
+        for await (const startTime of setInterval(
+          input.waitIntervalSeconds * 1000,
+          Date.now(),
+        )) {
           const now = Date.now();
-          if ((now - startTime) > input.maxWaitSeconds * 1000) {
+          if (now - startTime > input.maxWaitSeconds * 1000) {
             break;
           }
           core.info(`The key ${input.key} has already been locked. Waiting...`);
