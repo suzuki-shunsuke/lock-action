@@ -33,15 +33,16 @@ export const getMsg = (input: Input): string => {
 ${JSON.stringify(metadata, null, "  ")}`;
 };
 
-type Metadata = {
+export type Metadata = {
   message: string;
   state: string;
   actor: string;
   github_actions_workflow_run_url: string;
   pull_request_number?: number;
+  datetime?: string;
 };
 
-export const extractMetadata = (message: string, key: string): any => {
+export const extractMetadata = (message: string, key: string): Metadata => {
   const idx = message.indexOf("\n");
   if (idx === -1) {
     throw new Error(`The message of key ${key} is invalid`);

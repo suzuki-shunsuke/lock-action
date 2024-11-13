@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import * as lib from "./lib";
-import { setTimeout, setInterval } from "timers/promises";
+import { setInterval } from "timers/promises";
 
 enum Result {
   AlreadyLocked,
