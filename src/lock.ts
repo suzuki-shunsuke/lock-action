@@ -1,8 +1,38 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import * as lib from "./lib";
+import { setTimeout, setInterval } from "timers/promises";
+
+enum Result {
+  AlreadyLocked,
+  Locked,
+  FailedToGetLock,
+}
 
 export const lock = async (input: lib.Input): Promise<any> => {
+  let result = await _lock(input);
+  if (input.maxWaitSeconds === 0) {
+    return result;
+  }
+  if (result === Result.Locked) {
+    return result;
+  }
+  core.info(`The key ${input.key} has already been locked. Waiting...`);
+  for await (const startTime of setInterval(input.waitIntervalSeconds * 1000, Date.now())) {
+    const now = Date.now();
+    result = await _lock(input);
+    if (result === Result.Locked) {
+      return result;
+    }
+    if ((now - startTime) > input.maxWaitSeconds * 1000) {
+      return result;
+    }
+    core.info(`The key ${input.key} has already been locked. Waiting...`);
+  }
+  return result;
+};
+
+const _lock = async (input: lib.Input): Promise<Result> => {
   const branch = `${input.keyPrefix}${input.key}`;
   const ref = `heads/${branch}`;
   let result: any;
@@ -17,8 +47,7 @@ export const lock = async (input: lib.Input): Promise<any> => {
   core.debug(`result: ${JSON.stringify(result)}`);
   if (!result.repository.ref) {
     // If the key doesn't exist, create the key
-    await createKey(input, ref);
-    return;
+    return createKey(input, ref);
   }
   const metadata = lib.extractMetadata(
     result.repository.ref.target.message,
@@ -26,16 +55,23 @@ export const lock = async (input: lib.Input): Promise<any> => {
   );
   switch (metadata.state) {
     case "lock":
+      if (input.maxWaitSeconds !== 0) {
+        for await (const startTime of setInterval(input.waitIntervalSeconds * 1000, Date.now())) {
+          const now = Date.now();
+          if ((now - startTime) > input.maxWaitSeconds * 1000) {
+            break;
+          }
+          core.info(`The key ${input.key} has already been locked. Waiting...`);
+        }
+      }
       handleCaseLock(input, metadata, result);
     case "unlock":
-      await createLock(input, ref, result);
-      return;
+      return createLock(input, ref, result);
     default:
       throw new Error(
         `The state of key ${input.key} is invalid ${metadata.state}`,
       );
   }
-  return;
 };
 
 const getKey = async (input: lib.Input, branch: string): Promise<any> => {
@@ -68,7 +104,7 @@ const getKey = async (input: lib.Input, branch: string): Promise<any> => {
   );
 };
 
-const createKey = async (input: lib.Input, ref: string) => {
+const createKey = async (input: lib.Input, ref: string): Promise<Result> => {
   // If the key doesn't exist, create the key
   const octokit = github.getOctokit(input.githubToken);
   const commit = await octokit.rest.git.createCommit({
@@ -93,14 +129,16 @@ const createKey = async (input: lib.Input, ref: string) => {
       core.info(
         `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
       );
-      return;
+      return Result.FailedToGetLock;
     }
     throw new Error(
       `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
     );
+    return Result.FailedToGetLock;
   }
   core.info(`The key ${input.key} has been locked`);
   core.saveState(`got_lock`, true);
+  return Result.Locked;
 };
 
 const handleCaseLock = (input: lib.Input, metadata: any, result: any) => {
@@ -126,7 +164,7 @@ const createLock = async (
   input: lib.Input,
   ref: string,
   result: any,
-): Promise<any> => {
+): Promise<Result> => {
   // lock
   const octokit = github.getOctokit(input.githubToken);
   const commit = await octokit.rest.git.createCommit({
@@ -152,7 +190,7 @@ const createLock = async (
       core.info(
         `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
       );
-      return;
+      return Result.FailedToGetLock;
     }
     throw new Error(
       `Failed to acquire lock. Probably the key ${input.key} has already been locked`,
@@ -160,4 +198,5 @@ const createLock = async (
   }
   core.info(`The key ${input.key} has been locked`);
   core.saveState(`got_lock`, true);
+  return Result.Locked;
 };

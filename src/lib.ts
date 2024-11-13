@@ -13,6 +13,8 @@ export type Input = {
   repo: string;
   message: string;
   ignoreAlreadyLockedError: boolean;
+  maxWaitSeconds: number;
+  waitIntervalSeconds: number;
 };
 
 export const getMsg = (input: Input): string => {

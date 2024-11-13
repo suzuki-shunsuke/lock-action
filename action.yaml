@@ -56,6 +56,16 @@ inputs:
       If this is `true`, the action does not fail when it can't acquire the lock as the key is already being locked.
     default: "false"
     required: false
+  max_wait_seconds:
+    description: |
+      The maximum seconds to wait for the lock.
+    default: "0"
+    required: false
+  wait_interval_seconds:
+    description: |
+      Wait interval seconds to check or acquire the lock.
+    default: "30"
+    required: false
 outputs:
   already_locked:
     description: Whether the key is already locked

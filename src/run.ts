@@ -21,6 +21,8 @@ export const main = async () => {
     ignoreAlreadyLockedError: core.getBooleanInput(
       "ignore_already_locked_error",
     ),
+    waitIntervalSeconds: parseInt(core.getInput("wait_interval_seconds"), 10),
+    maxWaitSeconds: parseInt(core.getInput("max_wait_seconds"), 10),
   });
 };
 
