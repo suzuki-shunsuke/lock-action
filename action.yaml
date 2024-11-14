@@ -58,12 +58,12 @@ inputs:
     required: false
   max_wait_seconds:
     description: |
-      The maximum seconds to wait for the lock.
+      The maximum seconds to wait until the lock is released.
     default: "0"
     required: false
   wait_interval_seconds:
     description: |
-      Wait interval seconds to check or acquire the lock.
+      The interval seconds to check or try to acquire the lock.
     default: "30"
     required: false
 outputs:
