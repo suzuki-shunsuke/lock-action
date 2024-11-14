@@ -23,6 +23,11 @@ export const check = async (input: lib.Input) => {
   core.setOutput("already_locked", alreadyLocked);
   core.info(`already_locked: ${alreadyLocked}`);
   if (alreadyLocked && input.failIfLocked) {
+    core.error(`The key ${input.key} has already been locked.
+actor: ${metadata.actor}
+datetime: ${metadata.datetime}
+workflow: ${metadata.github_actions_workflow_run_url}
+message: ${metadata.message}`);
     throw new Error(`The key ${input.key} has already been locked`);
   }
 };
