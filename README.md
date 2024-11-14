@@ -79,6 +79,16 @@ If you want to continue jobs, you can ignore the failure using the input `ignore
   if: steps.check.outputs.already_locked == 'true' # Refer the result via outputs
 ```
 
+### `fail_if_locked` - Fail if a key is being locked
+
+```yaml
+- uses: suzuki-shunsuke/lock-action@latest
+  with:
+    mode: check
+    key: foo
+    fail_if_locked: "true"
+```
+
 ### Wait until a lock is released
 
 You can wait until a lock is released using inputs `max_wait_seconds` and `wait_interval_seconds`.
@@ -87,10 +97,10 @@ You can wait until a lock is released using inputs `max_wait_seconds` and `wait_
 
 ```yaml
 - uses: suzuki-shunsuke/lock-action@latest
-  id: check
   with:
     mode: check
     key: default
+    fail_if_locked: "true"
     max_wait_seconds: "60"
     wait_interval_seconds: "10"
 ```
