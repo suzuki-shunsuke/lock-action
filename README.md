@@ -63,11 +63,11 @@ steps:
 You can also use `post_unlock: "true"` to release a lock automatically in a post step.
 
 ```yaml
-  - uses: suzuki-shunsuke/lock-action@latest
-    with:
-      mode: lock
-      key: foo
-      post_unlock: "true"
+- uses: suzuki-shunsuke/lock-action@latest
+  with:
+    mode: lock
+    key: foo
+    post_unlock: "true"
 ```
 
 By default, `mode: lock` will fail if the key is already locked.
