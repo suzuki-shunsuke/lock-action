@@ -16,8 +16,15 @@ type Result = {
 
 export const check = async (input: lib.Input) => {
   const metadata = await _check(input);
-  core.setOutput("result", JSON.stringify(metadata));
-  core.setOutput("already_locked", metadata?.state === "lock");
+  const s = JSON.stringify(metadata ?? {});
+  core.setOutput("result", s);
+  core.info(`result: ${s}`);
+  const alreadyLocked = metadata?.state === "lock";
+  core.setOutput("already_locked", alreadyLocked);
+  core.info(`already_locked: ${alreadyLocked}`);
+  if (alreadyLocked && input.failIfLocked) {
+    throw new Error(`The key ${input.key} has already been locked`);
+  }
 };
 
 const _check = async (input: lib.Input): Promise<lib.Metadata | undefined> => {

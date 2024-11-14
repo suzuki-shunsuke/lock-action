@@ -66,6 +66,11 @@ inputs:
       The interval seconds to check or try to acquire the lock.
     default: "30"
     required: false
+  fail_if_locked:
+    description: |
+      Fail if the key is already locked. This input is for `check` mode.
+    default: "false"
+    required: false
 outputs:
   already_locked:
     description: Whether the key is already locked

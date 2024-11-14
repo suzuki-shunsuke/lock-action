@@ -8,8 +8,8 @@ import * as post from "./post";
 export const main = async () => {
   run({
     post: core.getState("post"),
-    mode: core.getInput("mode"),
-    key: core.getInput("key"),
+    mode: core.getInput("mode", { required: true }),
+    key: core.getInput("key", { required: true }),
     keyPrefix: core.getInput("key_prefix"),
     githubToken: core.getInput("github_token"),
     owner:
@@ -23,6 +23,7 @@ export const main = async () => {
     ),
     waitIntervalSeconds: parseInt(core.getInput("wait_interval_seconds"), 10),
     maxWaitSeconds: parseInt(core.getInput("max_wait_seconds"), 10),
+    failIfLocked: core.getBooleanInput("fail_if_locked"),
   });
 };
 
