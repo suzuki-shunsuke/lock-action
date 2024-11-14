@@ -15,6 +15,7 @@ export type Input = {
   ignoreAlreadyLockedError: boolean;
   maxWaitSeconds: number;
   waitIntervalSeconds: number;
+  failIfLocked: boolean;
 };
 
 export const getMsg = (input: Input): string => {
