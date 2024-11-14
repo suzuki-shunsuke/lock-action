@@ -1,8 +1,61 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import * as lib from "./lib";
+import { setInterval } from "timers/promises";
 
-export const check = async (input: lib.Input): Promise<any> => {
+enum State {
+  AlreadyLocked,
+  NotLocked,
+  FailedToCheckLock,
+}
+
+type Result = {
+  state: State;
+  metadata: any;
+};
+
+export const check = async (input: lib.Input) => {
+  const metadata = await _check(input);
+  core.setOutput("result", JSON.stringify(metadata));
+  core.setOutput("already_locked", metadata?.state === "lock");
+};
+
+const _check = async (input: lib.Input): Promise<lib.Metadata | undefined> => {
+  let metadata = await __check(input);
+  if (
+    input.maxWaitSeconds === 0 ||
+    metadata === undefined ||
+    metadata.state !== "lock"
+  ) {
+    return metadata;
+  }
+  core.info(`The key ${input.key} has already been locked. Waiting...
+actor: ${metadata.actor}
+datetime: ${metadata.datetime}
+workflow: ${metadata.github_actions_workflow_run_url}
+message: ${metadata.message}`);
+  for await (const startTime of setInterval(
+    input.waitIntervalSeconds * 1000,
+    Date.now(),
+  )) {
+    const now = Date.now();
+    metadata = await __check(input);
+    if (metadata === undefined || metadata.state !== "lock") {
+      return metadata;
+    }
+    if (now - startTime > input.maxWaitSeconds * 1000) {
+      return metadata;
+    }
+    core.info(`The key ${input.key} has already been locked. Waiting...
+actor: ${metadata.actor}
+datetime: ${metadata.datetime}
+workflow: ${metadata.github_actions_workflow_run_url}
+message: ${metadata.message}`);
+  }
+  return metadata;
+};
+
+const __check = async (input: lib.Input): Promise<lib.Metadata | undefined> => {
   const octokit = github.getOctokit(input.githubToken);
 
   const branch = `${input.keyPrefix}${input.key}`;
@@ -36,9 +89,7 @@ export const check = async (input: lib.Input): Promise<any> => {
     );
     core.debug(`result: ${JSON.stringify(result)}`);
     if (!result.repository.ref) {
-      core.setOutput("result", {});
-      core.setOutput("already_locked", false);
-      return;
+      return undefined;
     }
     const metadata = lib.extractMetadata(
       result.repository.ref.target.message,
@@ -46,8 +97,7 @@ export const check = async (input: lib.Input): Promise<any> => {
     );
 
     metadata.datetime = result.repository.ref.target.committedDate;
-    core.setOutput("result", JSON.stringify(metadata));
-    core.setOutput("already_locked", metadata.state === "lock");
+    return metadata;
   } catch (error: any) {
     // https://github.com/octokit/rest.js/issues/266
     core.error(`failed to get a key ${input.key}: ${error.message}`);

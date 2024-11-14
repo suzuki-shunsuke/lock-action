@@ -19,7 +19,7 @@ This action enables you to manage lock in GitHub Actions Workflows.
 
 ## How to use
 
-Example 1. Lock while running deploy.sh:
+### Example 1. Lock while running deploy.sh:
 
 ```yaml
 jobs:
@@ -37,8 +37,12 @@ jobs:
       - run: bash deploy.sh
 ```
 
+### `post_unlock` - Release a lock by post step
+
 By default, this action doesn't release a lock automatically even after the job has been completed.
 If you want to release a lock automatically after the job, you can use the input `post_unlock: "true"`.
+
+### `ignore_already_locked_error` - Ignore the failure even if the key has already been locked
 
 The action fails if the key has already been locked.
 If you want to continue jobs, you can ignore the failure using the input `ignore_already_locked_error`.
@@ -54,7 +58,7 @@ If you want to continue jobs, you can ignore the failure using the input `ignore
   if: steps.lock.outputs.already_locked == 'true' # Refer the result via outputs
 ```
 
-Example 2. Unlock
+### Example 2. Unlock
 
 ```yaml
 - uses: suzuki-shunsuke/lock-action@v0.1.1
@@ -63,7 +67,7 @@ Example 2. Unlock
     key: foo
 ```
 
-Example 3. Check if the key is being locked
+### Example 3. Check if the key is being locked
 
 ```yaml
 - uses: suzuki-shunsuke/lock-action@v0.1.1
@@ -74,6 +78,37 @@ Example 3. Check if the key is being locked
 - run: echo "already locked"
   if: steps.check.outputs.already_locked == 'true' # Refer the result via outputs
 ```
+
+### Wait until a lock is released
+
+You can wait until a lock is released using inputs `max_wait_seconds` and `wait_interval_seconds`.
+
+1. Check
+
+```yaml
+- uses: suzuki-shunsuke/lock-action@latest
+  id: check
+  with:
+    mode: check
+    key: default
+    max_wait_seconds: "60"
+    wait_interval_seconds: "10"
+```
+
+2. Lock
+
+```yaml
+- uses: suzuki-shunsuke/lock-action@pr/70
+  with:
+    mode: lock
+    key: default
+    max_wait_seconds: "60"
+    wait_interval_seconds: "10"
+```
+
+By default `max_wait_seconds` is 0, meaning this action doesn't wait.
+If the mode is `lock` and `max_wait_seconds` is greater than 0, this action retries to acquire the lock every `wait_interval_seconds` until `max_wait_seconds`.
+If the mode is `check` and `max_wait_seconds` is greater than 0, this action retries to check the lock every `wait_interval_seconds` until `max_wait_seconds`.
 
 ## Available versions
 
