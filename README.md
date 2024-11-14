@@ -2,86 +2,89 @@
 
 GitHub Action for lock mechanism using GitHub branches
 
-## What's lock mechanism?
-
-Lock mechanism enables you to prevent multiple processes from running the same task at the same time.
-For example, if the deployment is run when pull requests are merged in the default branch, you can prevent the deployments from being run at the same time by acquiring lock before deployment.
-Or you can also prevent Terraform from being run while splitting Terraform States.
-This action enables you to manage lock in GitHub Actions Workflows.
+Lock Mechanism is useful in CI workflows, like when you need to prevent simultaneous deployments or block deployments during maintenance.
 
 ## Features
 
-- No dependency on services such as AWS and GCP
-- No dependency on shell and external commands such as git
-- Use GitHub branches to achieve lock mechanism
-- Manage branches via GitHub API without git command. You don't have to checkout repositories by acitons/checkout
-- Record lock and unlock histories
+- No dependencies on external services like AWS or GCP
+- No reliance on shell or external commands such as git
+- Achieves locking using GitHub branches
+- Manage branches via GitHub API without git command. You don't have to checkout repositories by [actions/checkout](https://github.com/actions/checkout)
+- Records lock and unlock histories
+- Supports waiting until a lock is released
 
 ## How to use
 
-### Example 1. Lock while running deploy.sh:
+This action requires two inputs: `key` and `mode`.
+
+- `key`: an explicit identifier for the lock, which you can adjust by service and environment.
+- `mode`: the action’s operational mode, which can be one of these:
+  - `lock`: Acquires a lock
+  - `unlock`: Releases a lock
+  - `check`: Checks the lock status
+
+`mode: lock`:
 
 ```yaml
-jobs:
-  deploy-foo:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write # For lock and unlock
-    steps:
-      - uses: suzuki-shunsuke/lock-action@v0.1.1
-        id: lock
-        with:
-          mode: lock # mandatory
-          key: foo # mandatory
-          post_unlock: "true" # optional. Unlock key in a post step
-      - run: bash deploy.sh
+steps:
+  - name: Acquire a lock for a key `foo` before deploying an application
+    uses: suzuki-shunsuke/lock-action@latest
+    with:
+      mode: lock
+      key: foo
+  - run: bash deploy.sh foo
 ```
 
-### `post_unlock` - Release a lock by post step
-
-By default, this action doesn't release a lock automatically even after the job has been completed.
-If you want to release a lock automatically after the job, you can use the input `post_unlock: "true"`.
-
-### `ignore_already_locked_error` - Ignore the failure even if the key has already been locked
-
-The action fails if the key has already been locked.
-If you want to continue jobs, you can ignore the failure using the input `ignore_already_locked_error`.
+`mode: unlock`:
 
 ```yaml
-- uses: suzuki-shunsuke/lock-action@v0.1.1
-  id: lock
+steps:
+  - name: Release a lock
+    uses: suzuki-shunsuke/lock-action@latest
+    with:
+      mode: unlock
+      key: foo
+```
+
+`mode: check`:
+
+```yaml
+steps:
+  - name: Check if a key is being locked
+    id: check
+    uses: suzuki-shunsuke/lock-action@latest
+    with:
+      mode: check
+      key: foo
+  - run: bash deploy.sh foo
+    if: steps.check.outputs.already_locked != 'true'
+```
+
+You can also use `post_unlock: "true"` to release a lock automatically in a post step.
+
+```yaml
+  - uses: suzuki-shunsuke/lock-action@latest
+    with:
+      mode: lock
+      key: foo
+      post_unlock: "true"
+```
+
+By default, `mode: lock` will fail if the key is already locked.
+Set `ignore_already_locked_error: "true"` to avoid this.
+
+```yaml
+- uses: suzuki-shunsuke/lock-action@latest
   with:
     key: foo
     mode: lock
     ignore_already_locked_error: "true"
-- run: echo "already locked"
-  if: steps.lock.outputs.already_locked == 'true' # Refer the result via outputs
 ```
 
-### Example 2. Unlock
+To force `mode: check` to fail if a key is locked, use `fail_if_locked: "true"`.
 
 ```yaml
-- uses: suzuki-shunsuke/lock-action@v0.1.1
-  with:
-    mode: unlock
-    key: foo
-```
-
-### Example 3. Check if the key is being locked
-
-```yaml
-- uses: suzuki-shunsuke/lock-action@v0.1.1
-  id: check
-  with:
-    mode: check
-    key: foo
-- run: echo "already locked"
-  if: steps.check.outputs.already_locked == 'true' # Refer the result via outputs
-```
-
-### `fail_if_locked` - Fail if a key is being locked
-
-```yaml
+# This step fails if the key `foo` is being locked.
 - uses: suzuki-shunsuke/lock-action@latest
   with:
     mode: check
@@ -89,36 +92,29 @@ If you want to continue jobs, you can ignore the failure using the input `ignore
     fail_if_locked: "true"
 ```
 
-### Wait until a lock is released
-
-You can wait until a lock is released using inputs `max_wait_seconds` and `wait_interval_seconds`.
-
-1. Check
+To wait until a lock is released, use `max_wait_seconds` and `wait_interval_seconds`.
 
 ```yaml
 - uses: suzuki-shunsuke/lock-action@latest
-  with:
-    mode: check
-    key: default
-    fail_if_locked: "true"
-    max_wait_seconds: "60"
-    wait_interval_seconds: "10"
-```
-
-2. Lock
-
-```yaml
-- uses: suzuki-shunsuke/lock-action@pr/70
   with:
     mode: lock
     key: default
+    # Try to acquire a lock every 10 seconds until acquiring a lock or 60 seconds pass.
     max_wait_seconds: "60"
     wait_interval_seconds: "10"
 ```
 
-By default `max_wait_seconds` is 0, meaning this action doesn't wait.
-If the mode is `lock` and `max_wait_seconds` is greater than 0, this action retries to acquire the lock every `wait_interval_seconds` until `max_wait_seconds`.
-If the mode is `check` and `max_wait_seconds` is greater than 0, this action retries to check the lock every `wait_interval_seconds` until `max_wait_seconds`.
+These inputs are also available for `mode: check`.
+
+```yaml
+- uses: suzuki-shunsuke/lock-action@latest
+  with:
+    mode: check
+    key: default
+    # Check a lock every 5 seconds until the lock is released or 60 seconds pass
+    max_wait_seconds: "30"
+    wait_interval_seconds: "5"
+```
 
 ## Available versions
 
@@ -168,13 +164,12 @@ To try this, please [fork this repository](https://github.com/suzuki-shunsuke/lo
 1. terraform_plan: Check if the key is being locked before running terraform plan. The job would fail if the key is being locked.
 1. terraform_apply: Lock the key for 120 seconds and release the lock. The job would fail if the key is being locked.
 
-## How does it work?
+## How It Works
 
-This action creates and updates GitHub branches internally.
-It manages the state of the key `key` using commit messages of the branch `${{inputs.key_prefix}}${{inputs.key}}`.
-The default value of `key_prefix` is `lock__`, but you can change this by the input `key_prefix`.
+This action manages locks by creating and updating GitHub branches.
+Each lock’s state is tracked in the commit message of a branch named `${{inputs.key_prefix}}${{inputs.key}}` (default prefix: `lock__`, which can be customized with `key_prefix`).
 
-The commit messages are like this:
+Commit message format:
 
 ```
 unlock by suzuki-shunsuke: test
@@ -187,16 +182,16 @@ unlock by suzuki-shunsuke: test
 }
 ```
 
-You can see when and who (actor, workflow run, pull request number) locks or unloks the key from commit messages.
+From these commit messages, you can see when and who (actor, workflow run, pull request number) acquired or released the lock.
 
-![](https://storage.googleapis.com/zenn-user-upload/d6b27b221017-20241028.png)
+![commits](https://storage.googleapis.com/zenn-user-upload/d6b27b221017-20241028.png)
 
-![](https://storage.googleapis.com/zenn-user-upload/d5bb8fcd470e-20241028.png)
+![commit message](https://storage.googleapis.com/zenn-user-upload/d5bb8fcd470e-20241028.png)
 
-Example:
+Example links:
 
-- A list of branches: https://github.com/suzuki-shunsuke/lock-action/branches/all?query=lock__&lastTab=overview
-- https://github.com/suzuki-shunsuke/lock-action/commits/lock__test-1/
+- [Branch list](https://github.com/suzuki-shunsuke/lock-action/branches/all?query=lock__&lastTab=overview)
+- [Commit history for a specific lock](https://github.com/suzuki-shunsuke/lock-action/commits/lock__test-1/)
 
 ## Inputs / Outputs
 
@@ -208,20 +203,6 @@ This action creates branches `${{inputs.key_prefix}}${{inputs.key}}`, so `${{inp
 
 - https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
 - https://git-scm.com/docs/git-check-ref-format
-
-## Alternatives
-
-There are some alternatives, but they don't meet our needs.
-
-https://github.com/github/lock
-
-This is an official action. We need a simpler action.
-
-https://github.com/ben-z/gh-action-mutex
-
-- High overhead due to Docker action
-- Depend on shell and git
-- Always release a lock in a post step
 
 ## LICENSE
 
