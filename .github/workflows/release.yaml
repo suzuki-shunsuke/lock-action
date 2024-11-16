@@ -10,14 +10,22 @@ on:
       pr:
         description: "pr number (pre-release)"
         required: false
-permissions:
-  contents: write
-  pull-requests: write
 jobs:
   release:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - run: gh pr checkout "$PR"
+        if: inputs.pr != ''
+        env:
+          GITHUB_TOKEN: ${{github.token}}
+      - run: npm ci
+      - run: npm run build
+
       - uses: suzuki-shunsuke/build-js-action@feat-fist-pr
         with:
           version: ${{inputs.tag}}
