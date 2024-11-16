@@ -26,6 +26,7 @@ jobs:
         if: inputs.pr != ''
         env:
           GITHUB_TOKEN: ${{github.token}}
+          PR: ${{inputs.pr}}
       - run: npm ci
       - run: npm run build
 
