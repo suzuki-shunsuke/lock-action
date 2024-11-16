@@ -30,7 +30,7 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - uses: suzuki-shunsuke/build-js-action@feat-fist-pr
+      - uses: suzuki-shunsuke/release-js-action@feat-fist-pr
         with:
           version: pr/${{inputs.pr}}
           is_comment: ${{inputs.is_comment}}
