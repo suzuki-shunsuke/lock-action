@@ -14,14 +14,6 @@ jobs:
     env:
       BRANCH: latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: ./.github/actions/build
+      - uses: suzuki-shunsuke/build-js-action@feat-first-pr
         with:
-          branch: ${{env.BRANCH}}
-      - run: |
-          git commit -m "chore: build main
-          base revision: ${BASE_REVISION}"
-
-      - run: git push origin "$BRANCH" --force
-        env:
-          GITHUB_TOKEN: ${{github.token}}
+          version: latest
