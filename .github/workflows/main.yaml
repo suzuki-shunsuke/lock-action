@@ -14,6 +14,6 @@ jobs:
     env:
       BRANCH: latest
     steps:
-      - uses: suzuki-shunsuke/build-js-action@feat-first-pr
+      - uses: suzuki-shunsuke/build-js-action@feat-fist-pr
         with:
           version: latest

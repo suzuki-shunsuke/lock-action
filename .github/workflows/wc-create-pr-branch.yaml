@@ -32,7 +32,7 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
-      - uses: suzuki-shunsuke/build-js-action@feat-first-pr
+      - uses: suzuki-shunsuke/build-js-action@feat-fist-pr
         with:
           version: ${{env.PR_BRANCH}}
           is_comment: ${{inputs.is_comment}}
