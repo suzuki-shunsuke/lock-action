@@ -13,6 +13,6 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - run: npm ci
       - run: npm run build
-      - uses: suzuki-shunsuke/release-js-action@be391796737896792511dfe778da97ef439160e7 # v0.1.1
+      - uses: suzuki-shunsuke/release-js-action@e171d621cbdcf5e0f64b9746ed88a2210ef51bdd # v0.1.2
         with:
           version: latest
