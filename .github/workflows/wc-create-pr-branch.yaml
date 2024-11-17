@@ -30,7 +30,7 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - uses: suzuki-shunsuke/release-js-action@964d814f9200bb928f4713098c38218881cfc493 # v0.1.0
+      - uses: suzuki-shunsuke/release-js-action@fix-action-name
         with:
           version: pr/${{inputs.pr}}
           is_comment: ${{inputs.is_comment}}
