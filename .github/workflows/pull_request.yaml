@@ -20,12 +20,13 @@ jobs:
           filters: |
             update-aqua-checksums:
               - aqua/aqua.yaml
-              - aqua/*.yaml
+              - aqua/imports/*.yaml
               - aqua/aqua-checksums.json
-              - .github/workflows/test.yaml
+              - .github/workflows/pull_request.yaml
+              - .github/workflows/wc-update-aqua-checksums.yaml
             renovate-config-validator:
               - renovate.json5
-              - .github/workflows/test.yaml
+              - .github/workflows/pull_request.yaml
               - .github/workflows/wc-renovate-config-validator.yaml
             ghalint:
               - .github/workflows/*.yaml
