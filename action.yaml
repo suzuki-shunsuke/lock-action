@@ -73,7 +73,7 @@ inputs:
     required: false
 outputs:
   locked:
-    description: Whether the key is locked 
+    description: Whether the key is locked
   already_locked:
     description: |
       Whether the key is already locked.
