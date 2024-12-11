@@ -120,31 +120,31 @@ These inputs are also available for `mode: check`.
 The output is useful if you want to release a lock in a later job.
 
 ```yaml
-  lock:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      locked: ${{steps.lock.outputs.locked}}
-    steps:
-      - uses: suzuki-shunsuke/lock-action@c752be910ac812e0adc50316855416514d364b57 # v0.1.3
-        id: lock
-        with:
-          mode: lock
-          key: dev
-      # ...
+lock:
+  runs-on: ubuntu-latest
+  permissions:
+    contents: write
+  outputs:
+    locked: ${{steps.lock.outputs.locked}}
+  steps:
+    - uses: suzuki-shunsuke/lock-action@c752be910ac812e0adc50316855416514d364b57 # v0.1.3
+      id: lock
+      with:
+        mode: lock
+        key: dev
+    # ...
 
-  unlock:
-    runs-on: ubuntu-latest
-    needs: lock
-    permissions:
-      contents: write
-    steps:
-      - uses: suzuki-shunsuke/lock-action@c752be910ac812e0adc50316855416514d364b57 # v0.1.3
-        if: needs.lock.outputs.locked == 'true'
-        with:
-          mode: unlock
-          key: dev
+unlock:
+  runs-on: ubuntu-latest
+  needs: lock
+  permissions:
+    contents: write
+  steps:
+    - uses: suzuki-shunsuke/lock-action@c752be910ac812e0adc50316855416514d364b57 # v0.1.3
+      if: needs.lock.outputs.locked == 'true'
+      with:
+        mode: unlock
+        key: dev
 ```
 
 ## Available versions
