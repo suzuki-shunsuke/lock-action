@@ -14,7 +14,7 @@ export const lock = async (input: lib.Input) => {
   switch (result) {
     case Result.AlreadyLocked:
       core.setOutput("already_locked", true);
-      core.setOutput("locked", true);
+      core.setOutput("locked", false);
       if (input.ignoreAlreadyLockedError) {
         return;
       }
