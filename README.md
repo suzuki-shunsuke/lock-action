@@ -57,7 +57,7 @@ steps:
       mode: check
       key: foo
   - run: bash deploy.sh foo
-    if: steps.check.outputs.already_locked != 'true'
+    if: steps.check.outputs.locked != 'true'
 ```
 
 You can also use `post_unlock: "true"` to release a lock automatically in a post step.
