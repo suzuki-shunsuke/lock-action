@@ -20,6 +20,7 @@ export const check = async (input: lib.Input) => {
   core.setOutput("result", s);
   core.info(`result: ${s}`);
   const alreadyLocked = metadata?.state === "lock";
+  core.setOutput("locked", alreadyLocked);
   core.setOutput("already_locked", alreadyLocked);
   core.info(`already_locked: ${alreadyLocked}`);
   if (alreadyLocked && input.failIfLocked) {

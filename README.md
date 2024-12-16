@@ -57,7 +57,7 @@ steps:
       mode: check
       key: foo
   - run: bash deploy.sh foo
-    if: steps.check.outputs.already_locked != 'true'
+    if: steps.check.outputs.locked != 'true'
 ```
 
 You can also use `post_unlock: "true"` to release a lock automatically in a post step.
@@ -114,6 +114,37 @@ These inputs are also available for `mode: check`.
     # Check a lock every 5 seconds until the lock is released or 60 seconds pass
     max_wait_seconds: "30"
     wait_interval_seconds: "5"
+```
+
+[#131](https://github.com/suzuki-shunsuke/lock-action/issues/131) [#135](https://github.com/suzuki-shunsuke/lock-action/pull/135) [>= v0.1.4](https://github.com/suzuki-shunsuke/lock-action/releases/tag/v0.1.4) You can check if this action can acquire the lock in later jobs using the output `locked`.
+The output is useful if you want to release a lock in a later job.
+
+```yaml
+lock:
+  runs-on: ubuntu-latest
+  permissions:
+    contents: write
+  outputs:
+    locked: ${{steps.lock.outputs.locked}}
+  steps:
+    - uses: suzuki-shunsuke/lock-action@c752be910ac812e0adc50316855416514d364b57 # v0.1.3
+      id: lock
+      with:
+        mode: lock
+        key: dev
+    # ...
+
+unlock:
+  runs-on: ubuntu-latest
+  needs: lock
+  permissions:
+    contents: write
+  steps:
+    - uses: suzuki-shunsuke/lock-action@c752be910ac812e0adc50316855416514d364b57 # v0.1.3
+      if: needs.lock.outputs.locked == 'true'
+      with:
+        mode: unlock
+        key: dev
 ```
 
 ## Available versions

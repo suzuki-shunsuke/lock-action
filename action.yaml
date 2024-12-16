@@ -72,8 +72,14 @@ inputs:
     default: "false"
     required: false
 outputs:
+  locked:
+    description: Whether the key is locked
   already_locked:
-    description: Whether the key is already locked
+    description: |
+      Whether the key is already locked.
+      The difference between `already_locked` is that if `mode` is `lock` and the lock has already been acquired, `already_locked` is `true` but `locked` is `false`.
+      And if the lock hasn't been acquired and the action can acquire a lock, `already_locked` is `false` but `locked` is `true`.
+      If `mode` is `check`, there is no difference between `already_locked` and `locked`.
   result:
     description: The lock result
 runs:
