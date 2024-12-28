@@ -7,53 +7,9 @@ tasks:
     description: release the new version
     usage: release the new version
     script: |
-      set -euxo pipefail
-
-      # Run workflow
-      opts=""
-      if [ -n "$PR" ]; then
-        opts="-f pr=$PR"
-      fi
-      if [ -n "$REF" ]; then
-        opts="$opts -r $REF"
-      fi
-      gh workflow run release.yaml -f "tag=$VERSION" $opts
-
-      # Get a workflow run id
-      sleep 10 # Wait for the workflow run to start
-      run_id=$(gh run list -w release.yaml -L 1 --json databaseId --jq '.[].databaseId')
-
-      # Wait until the workflow run completes
-      gh run watch --exit-status "$run_id"
-
-      # Create a tag and a release
-      branch="release-${VERSION}"
-      git fetch origin "$branch"
-      base_revision=$(git log -1 --pretty=%B "origin/$branch" | grep "base revision:" | sed -E "s/^base revision: (.*)$/\1/")
-      sha=$(git rev-parse "origin/$branch")
-      git tag -m "release $VERSION" "$VERSION" "$sha"
-      git push origin "$VERSION"
-
-      # Create a release note
-      repo=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}
-      issues="[Issues](${repo}/issues?q=is%3Aissue+is%3Aclosed+milestone%3A${VERSION})"
-      prs="[Pull Requests](${repo}/pulls?q=is%3Apr+is%3Aclosed+milestone%3A${VERSION})"
-      compare="${repo}/compare/${VERSION}...${VERSION}"
-      base="[Base revision](${repo}/tree/$base_revision)"
-      if [[ "$VERSION" =~ - ]]; then
-        # pre-release
-        note="$compare | $base"
-      else
-        note="$issues | $prs | $compare | $base"
-      fi
-
-      gh release create "$VERSION" -p --title "$VERSION" -n "$note"
-
-      # Delete a remote branch
-      git push origin --delete "$branch"
+      rjsa "$VERSION" "$PR"
     environment:
       GITHUB_SERVER_URL: https://github.com
-      GITHUB_REPOSITORY: suzuki-shunsuke/lock-action
     args:
       - name: version
         required: true
