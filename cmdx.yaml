@@ -6,12 +6,40 @@ tasks:
     short: r
     description: release the new version
     usage: release the new version
-    script: gh workflow run release.yaml -f tag={{.version}}
+    script: |
+      set -euo pipefail
+      # Run workflow
+      gh workflow run release.yaml -f "tag=$VERSION"
+
+      # Get a workflow run id
+      run_id=$(gh run list -w release.yaml -L 1 --json databaseId --jq '.[].databaseId')
+
+      # Wait until the workflow run completes
+      gh run watch --exit-status "$run_id"
+
+      # Create a tag and a release
+      branch="release-${VERSION}"
+      git fetch origin "$branch"
+      git checkout -b "$branch" "origin/$branch"
+      base_revision=$(git log -1 --pretty=%B | grep "base revision:" | sed -E "s/^base revision: (.*)$/\1/")
+      git tag -m "release $VERSION" "$VERSION"
+      git push origin "$VERSION"
+      repo=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}
+      note="[Issues](${repo}/issues?q=is%3Aissue+is%3Aclosed+milestone%3A${VERSION}) | [Pull Requests](${repo}/pulls?q=is%3Apr+is%3Aclosed+milestone%3A${VERSION}) | ${repo}/compare/${VERSION}...${VERSION} | [Base revision](${repo}/tree/$base_revision)"
+      gh release create "$VERSION" -p --title "$VERSION" -n "$note"
+
+      # Delete a remote branch
+      git push origin --delete "$branch"
+    environment:
+      GITHUB_SERVER_URL: https://github.com
+      GITHUB_REPOSITORY: suzuki-shunsuke/lock-action
     args:
       - name: version
         required: true
         validate:
           - regexp: "^v\\d+\\.\\d+.\\d+(-\\d+)?$"
+        script_envs:
+          - version
   - name: build
     description: build TypeScript
     usage: build TypeScript
