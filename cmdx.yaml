@@ -50,6 +50,7 @@ tasks:
     usage: Format with prettier
     shell:
     - bash
+    - -c
     script: |
       set -euo pipefail
       npm run fmt
