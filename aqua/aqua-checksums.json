@@ -1,11 +1,6 @@
 {
   "checksums": [
     {
-      "id": "github_content/github.com/suzuki-shunsuke/rjsa/v0.1.0/rjsa",
-      "checksum": "6C015E625B5D65C4D96A239625F8024F1D9D472E4C9E2C591A7C8128199286EC",
-      "algorithm": "sha256"
-    },
-    {
       "id": "github_release/github.com/int128/ghcp/v1.13.5/ghcp_darwin_amd64.zip",
       "checksum": "6728BD668888A64C71BF01D9AFBA373F38D353B79D181B1401A4E5E4B329289D",
       "algorithm": "sha256"
