@@ -49,8 +49,8 @@ tasks:
     description: Format with prettier
     usage: Format with prettier
     shell:
-    - bash
-    - -c
+      - bash
+      - -c
     script: |
       set -euo pipefail
       npm run fmt
