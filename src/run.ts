@@ -9,6 +9,7 @@ export const main = async () => {
   run({
     post: core.getState("post"),
     mode: core.getInput("mode", { required: true }),
+    historyMode: core.getInput("history_mode", { required: true }),
     key: core.getInput("key", { required: true }),
     keyPrefix: core.getInput("key_prefix"),
     githubToken: core.getInput("github_token"),
