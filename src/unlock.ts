@@ -3,6 +3,17 @@ import * as github from "@actions/github";
 import * as lib from "./lib";
 
 export const unlock = async (input: lib.Input): Promise<any> => {
+  if (input.historyMode === "none") {
+    try {
+      // Remove the branch
+      await removeKey(input);
+    } catch (error: any) {
+      // https://github.com/octokit/rest.js/issues/266
+      core.error(`failed to remove a key ${input.key}: ${error.message}`);
+      throw error;
+    }
+  }
+
   const octokit = github.getOctokit(input.githubToken);
 
   let result: any;
@@ -95,4 +106,15 @@ const getKey = async (input: lib.Input): Promise<any> => {
       ref: `${input.keyPrefix}${input.key}`,
     },
   );
+};
+
+const removeKey = async (input: lib.Input): Promise<any> => {
+  const branch = `${input.keyPrefix}${input.key}`;
+  const ref = `heads/${branch}`;
+  const octokit = github.getOctokit(input.githubToken);
+  octokit.rest.git.deleteRef({
+    owner: input.owner,
+    repo: input.repo,
+    ref,
+  });
 };

@@ -19,6 +19,12 @@ inputs:
     required: true
 
   # Optional
+  history:
+    description: |
+      If this is "keep", all histories are stored to branches.
+      If this is "none", branches are deleted when releasing the lock.
+    required: false
+    default: "keep"
   key_prefix:
     description: |
       A lock key prefix.
