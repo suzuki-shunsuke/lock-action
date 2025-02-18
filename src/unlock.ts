@@ -6,12 +6,10 @@ export const unlock = async (input: lib.Input): Promise<any> => {
   if (input.history === "none") {
     try {
       // Remove the branch
-      await removeKey(input);
-      core.info(`The key ${input.key} has been removed`);
-      return;
+      return await removeKey(input);
     } catch (error: any) {
-      if (!error.message.includes("Reference does not exist")) {
-        throw error;
+      if (error.message.includes("Reference does not exist")) {
+        return;
       }
       // https://github.com/octokit/rest.js/issues/266
       core.error(`failed to remove a key ${input.key}: ${error.message}`);
