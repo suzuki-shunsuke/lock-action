@@ -8,6 +8,7 @@ export const unlock = async (input: lib.Input): Promise<any> => {
       // Remove the branch
       return await removeKey(input);
     } catch (error: any) {
+      core.info(error.message);
       if (error.message.includes("Reference does not exist")) {
         return;
       }
@@ -115,7 +116,7 @@ const removeKey = async (input: lib.Input): Promise<any> => {
   const branch = `${input.keyPrefix}${input.key}`;
   const ref = `heads/${branch}`;
   const octokit = github.getOctokit(input.githubToken);
-  octokit.rest.git.deleteRef({
+  return await octokit.rest.git.deleteRef({
     owner: input.owner,
     repo: input.repo,
     ref,
