@@ -16,7 +16,7 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
-      - run: npm i
+      - run: npm ci
       - run: npm run build
 
       - name: Unlock test-1
@@ -30,6 +30,8 @@ jobs:
           mode: lock
           key: test-1
           post_unlock: "true"
+          max_wait_seconds: "30"
+          wait_interval_seconds: "5"
       - name: Check test-1
         uses: ./
         id: check
@@ -54,7 +56,7 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
-      - run: npm i
+      - run: npm ci
       - run: npm run build
 
       - name: Check test-2
@@ -72,8 +74,17 @@ jobs:
         with:
           mode: lock
           key: test-2
-      - name: Unlock test-2
+          max_wait_seconds: "30"
+          wait_interval_seconds: "5"
+      - name: Remove test-2
         uses: ./
         with:
           mode: unlock
           key: test-2
+          remove_key_when_unlock: "true"
+      - name: Remove test-2 again
+        uses: ./
+        with:
+          mode: unlock
+          key: test-2
+          remove_key_when_unlock: "true"
