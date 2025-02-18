@@ -9,7 +9,7 @@ export const main = async () => {
   run({
     post: core.getState("post"),
     mode: core.getInput("mode", { required: true }),
-    history: core.getInput("history"),
+    removeKeyWhenUnlock: core.getBooleanInput("remove_key_when_unlock"),
     key: core.getInput("key", { required: true }),
     keyPrefix: core.getInput("key_prefix"),
     githubToken: core.getInput("github_token"),

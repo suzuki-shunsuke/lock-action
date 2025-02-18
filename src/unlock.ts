@@ -3,7 +3,7 @@ import * as github from "@actions/github";
 import * as lib from "./lib";
 
 export const unlock = async (input: lib.Input): Promise<any> => {
-  if (input.history === "none") {
+  if (input.removeKeyWhenUnlock) {
     try {
       // Remove the branch
       await removeKey(input);

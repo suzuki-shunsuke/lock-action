@@ -19,12 +19,13 @@ inputs:
     required: true
 
   # Optional
-  history:
+  remove_key_when_unlock:
     description: |
-      If this is "keep", all histories are stored to branches.
-      If this is "none", branches are deleted when releasing the lock.
+      Either "true" or "false".
+      If this is "true", the key is removed when releasing the lock.
+      If this is "false", all histories are kept.
     required: false
-    default: "keep"
+    default: "false"
   key_prefix:
     description: |
       A lock key prefix.
