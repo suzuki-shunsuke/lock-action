@@ -3,10 +3,10 @@ import * as github from "@actions/github";
 import * as lib from "./lib";
 
 export const unlock = async (input: lib.Input): Promise<any> => {
-  if (input.historyMode === "none") {
+  if (input.history === "none") {
     try {
       // Remove the branch
-      await removeKey(input);
+      return removeKey(input);
     } catch (error: any) {
       // https://github.com/octokit/rest.js/issues/266
       core.error(`failed to remove a key ${input.key}: ${error.message}`);
