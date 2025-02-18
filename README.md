@@ -147,6 +147,11 @@ unlock:
         key: dev
 ```
 
+By default, this action adds a unlock history to a key when releasing a lock.
+By setting `history: "none"`, this action removes a key when releasing a lock.
+This allows you to acquire the list of locked keys easily and keep keys clean.
+If you need only the latest lock histories, you may prefer this option.
+
 ## Available versions
 
 > [!CAUTION]
@@ -223,6 +228,9 @@ Example links:
 
 - [Branch list](https://github.com/suzuki-shunsuke/lock-action/branches/all?query=lock__&lastTab=overview)
 - [Commit history for a specific lock](https://github.com/suzuki-shunsuke/lock-action/commits/lock__test-1/)
+
+When releasing a lock, this action adds a commit to a branch by default.
+If you set `history: "none"`, this action removes a branch when releasing a lock.
 
 ## Inputs / Outputs
 
