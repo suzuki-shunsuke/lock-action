@@ -1,5 +1,7 @@
 # lock-action
 
+[![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/suzuki-shunsuke/lock-action/main/LICENSE) | [action.yaml](action.yaml)
+
 GitHub Action for lock mechanism using GitHub branches
 
 Lock Mechanism is useful in CI workflows, like when you need to prevent simultaneous deployments or block deployments during maintenance.
@@ -60,6 +62,8 @@ steps:
     if: steps.check.outputs.locked != 'true'
 ```
 
+### Release a lock automatically in a post step
+
 You can also use `post_unlock: "true"` to release a lock automatically in a post step.
 
 ```yaml
@@ -69,6 +73,8 @@ You can also use `post_unlock: "true"` to release a lock automatically in a post
     key: foo
     post_unlock: "true"
 ```
+
+### Ignore error even if the key is already locked
 
 By default, `mode: lock` will fail if the key is already locked.
 Set `ignore_already_locked_error: "true"` to avoid this.
@@ -81,6 +87,8 @@ Set `ignore_already_locked_error: "true"` to avoid this.
     ignore_already_locked_error: "true"
 ```
 
+### Make `check` fail if a key is locked
+
 To force `mode: check` to fail if a key is locked, use `fail_if_locked: "true"`.
 
 ```yaml
@@ -91,6 +99,8 @@ To force `mode: check` to fail if a key is locked, use `fail_if_locked: "true"`.
     key: foo
     fail_if_locked: "true"
 ```
+
+### Wait until a lock is released
 
 To wait until a lock is released, use `max_wait_seconds` and `wait_interval_seconds`.
 
@@ -115,6 +125,8 @@ These inputs are also available for `mode: check`.
     max_wait_seconds: "30"
     wait_interval_seconds: "5"
 ```
+
+### Release a lock in a later job
 
 [#131](https://github.com/suzuki-shunsuke/lock-action/issues/131) [#135](https://github.com/suzuki-shunsuke/lock-action/pull/135) [>= v0.1.4](https://github.com/suzuki-shunsuke/lock-action/releases/tag/v0.1.4) You can check if this action can acquire the lock in later jobs using the output `locked`.
 The output is useful if you want to release a lock in a later job.
@@ -146,6 +158,8 @@ unlock:
         mode: unlock
         key: dev
 ```
+
+### Remove a key when releasing a lock
 
 By default, this action adds a unlock history to a key when releasing a lock.
 By setting `remove_key_when_unlock: "true"`, this action removes a key when releasing a lock.
@@ -250,7 +264,3 @@ This action creates branches `${{inputs.key_prefix}}${{inputs.key}}`, so `${{inp
 
 - https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
 - https://git-scm.com/docs/git-check-ref-format
-
-## LICENSE
-
-[MIT](LICENSE)
