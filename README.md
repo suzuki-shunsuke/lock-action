@@ -121,7 +121,7 @@ These inputs are also available for `mode: check`.
   with:
     mode: check
     key: default
-    # Check a lock every 5 seconds until the lock is released or 60 seconds pass
+    # Check a lock every 5 seconds until the lock is released or 30 seconds pass
     max_wait_seconds: "30"
     wait_interval_seconds: "5"
 ```
