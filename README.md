@@ -1,5 +1,7 @@
 # lock-action
 
+[![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/suzuki-shunsuke/lock-action/main/LICENSE) | [action.yaml](action.yaml)
+
 GitHub Action for lock mechanism using GitHub branches
 
 Lock Mechanism is useful in CI workflows, like when you need to prevent simultaneous deployments or block deployments during maintenance.
@@ -262,7 +264,3 @@ This action creates branches `${{inputs.key_prefix}}${{inputs.key}}`, so `${{inp
 
 - https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
 - https://git-scm.com/docs/git-check-ref-format
-
-## LICENSE
-
-[MIT](LICENSE)
