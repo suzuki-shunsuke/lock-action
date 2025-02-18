@@ -6,6 +6,7 @@ export const rootTree = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"; // https://s
 export type Input = {
   post: string;
   mode: string;
+  removeKeyWhenUnlock: boolean;
   key: string;
   keyPrefix: string;
   githubToken: string;
