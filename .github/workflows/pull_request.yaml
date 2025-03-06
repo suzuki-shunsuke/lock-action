@@ -1,7 +1,5 @@
 name: pull request
-
 on: pull_request
-
 jobs:
   path-filter:
     # Get changed files to filter jobs
