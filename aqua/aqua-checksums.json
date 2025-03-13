@@ -211,28 +211,28 @@
       "algorithm": "sha256"
     },
     {
-      "id": "http/nodejs.org/dist/v20.18.3/node-v20.18.3-darwin-arm64.tar.gz",
-      "checksum": "1F15B7ED18A580AF31CF32BC126572292D820F547BF55BF9CDCE08041A24E1D9",
+      "id": "http/nodejs.org/dist/v20.19.0/node-v20.19.0-darwin-arm64.tar.gz",
+      "checksum": "C016CD1975A264A29DC1B07C6FBE60D5DF0A0C2BEB4113C0450E3D998D1A0D9C",
       "algorithm": "sha256"
     },
     {
-      "id": "http/nodejs.org/dist/v20.18.3/node-v20.18.3-darwin-x64.tar.gz",
-      "checksum": "BA668F64DF9239843FEFCEF095EE539F5AC5AA1B0FC15A71F1ECCA16ABEDEC7A",
+      "id": "http/nodejs.org/dist/v20.19.0/node-v20.19.0-darwin-x64.tar.gz",
+      "checksum": "A8554AF97D6491FDBDABE63D3A1CFB9571228D25A3AD9AED2DF856FACB131B20",
       "algorithm": "sha256"
     },
     {
-      "id": "http/nodejs.org/dist/v20.18.3/node-v20.18.3-linux-arm64.tar.gz",
-      "checksum": "93A9DF19238ADFAA289F4784041D03EDAF2FDD89FBB247FAFFCA2FE4A1000703",
+      "id": "http/nodejs.org/dist/v20.19.0/node-v20.19.0-linux-arm64.tar.gz",
+      "checksum": "618E4294602B78E97118A39050116B70D088B16197CD3819BBA1FC18B473DFC4",
       "algorithm": "sha256"
     },
     {
-      "id": "http/nodejs.org/dist/v20.18.3/node-v20.18.3-linux-x64.tar.gz",
-      "checksum": "9FC3952DA39B20D1FCFDB777B198CC035485AFBBB1004B4DF93F35245D61151E",
+      "id": "http/nodejs.org/dist/v20.19.0/node-v20.19.0-linux-x64.tar.gz",
+      "checksum": "8A4DBCDD8BCCEF3132D21E8543940557E55DCF44F00F0A99BA8A062F4552E722",
       "algorithm": "sha256"
     },
     {
-      "id": "http/nodejs.org/dist/v20.18.3/node-v20.18.3-win-x64.zip",
-      "checksum": "11D483DFBA711BC7C9BCB513E80A2941BE0C2E7CBF62753755785B9A6E80A731",
+      "id": "http/nodejs.org/dist/v20.19.0/node-v20.19.0-win-x64.zip",
+      "checksum": "BE72284C7BC62DE07D5A9FD0AE196879842C085F11F7F2B60BF8864C0C9D6A4F",
       "algorithm": "sha256"
     },
     {
