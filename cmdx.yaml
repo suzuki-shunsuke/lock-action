@@ -55,7 +55,3 @@ tasks:
       set -euo pipefail
       npm run fmt
       git ls-files | xargs nllint -f -s
-  - name: pinact
-    description: Run pinact
-    usage: Run pinact
-    script: pinact run
