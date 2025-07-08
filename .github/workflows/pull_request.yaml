@@ -11,7 +11,7 @@ jobs:
       pull-requests: write
   status-check:
     runs-on: ubuntu-24.04
-    if: failure()
+    if: always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
     timeout-minutes: 10
     permissions: {}
     needs:
