@@ -15,6 +15,6 @@ jobs:
           persist-credentials: false
       - run: npm ci
       - run: npm run build
-      - uses: suzuki-shunsuke/release-js-action@0c8995bef6136b89f294badd3f6b1f2615f7ba56 # v0.1.7
+      - uses: suzuki-shunsuke/release-js-action@7586139c29abe68e2bc84395ac4300f20112b764 # v0.1.8
         with:
           version: latest
