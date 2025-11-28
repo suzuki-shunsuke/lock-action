@@ -1,2 +1,2 @@
 packages:
-  - name: nodejs/node@v20.19.5
+  - name: nodejs/node@v20.19.6
