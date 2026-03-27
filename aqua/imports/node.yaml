@@ -1,2 +1,2 @@
 packages:
-  - name: nodejs/node@v20.20.1
+  - name: nodejs/node@v20.20.2
