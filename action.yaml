@@ -4,6 +4,10 @@ author: Shunsuke Suzuki
 branding:
   icon: lock
   color: green
+runs:
+  using: "node24"
+  main: "dist/index.js"
+  post: "dist/index.js"
 inputs:
   # Required
   mode:
@@ -89,7 +93,3 @@ outputs:
       If `mode` is `check`, there is no difference between `already_locked` and `locked`.
   result:
     description: The lock result
-runs:
-  using: "node20"
-  main: "dist/index.js"
-  post: "dist/index.js"
