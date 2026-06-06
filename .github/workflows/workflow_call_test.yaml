@@ -1,5 +1,9 @@
 name: test (workflow_call)
-on: workflow_call
+on:
+  workflow_call:
+    secrets:
+      TAKUMI_GUARD_BOT_ID:
+        required: true
 jobs:
   path-filter:
     # Get changed files to filter jobs
@@ -41,6 +45,9 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
+    secrets:
+      TAKUMI_GUARD_BOT_ID: ${{secrets.TAKUMI_GUARD_BOT_ID}}
     with:
       pr: ${{github.event.pull_request.number}}
 
@@ -48,3 +55,6 @@ jobs:
     uses: ./.github/workflows/wc-test.yaml
     permissions:
       contents: write
+      id-token: write
+    secrets:
+      TAKUMI_GUARD_BOT_ID: ${{secrets.TAKUMI_GUARD_BOT_ID}}

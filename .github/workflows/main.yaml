@@ -9,10 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write # Required for OIDC
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
+      - uses: flatt-security/setup-takumi-guard-npm@9a5d797c2085b6326d3a2985c08e3a114b9b88c1 # v1.1.1
+        with:
+          bot-id: ${{secrets.TAKUMI_GUARD_BOT_ID}}
       - run: npm ci
       - run: npm run build
       - uses: suzuki-shunsuke/release-js-action@ff106e3a3f5b34f174a23db3110031fbf463f15c # v0.2.1
