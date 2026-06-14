@@ -10,7 +10,7 @@
     "@octokit/graphql": "^9.0.0"
   },
   "devDependencies": {
-    "@types/node": "24.13.1",
+    "@types/node": "24.13.2",
     "@vercel/ncc": "0.44.0",
     "prettier": "3.8.4",
     "typescript": "6.0.3"
