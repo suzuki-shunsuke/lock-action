@@ -28,7 +28,7 @@ jobs:
   lock:
     name: ${{inputs.action}}
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     if: |
@@ -52,7 +52,7 @@ jobs:
 
   terraform_apply:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: inputs.action == 'terraform_apply'
     permissions:
       contents: write
@@ -70,7 +70,7 @@ jobs:
 
   terraform_plan:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: inputs.action == 'terraform_plan'
     permissions:
       contents: read
