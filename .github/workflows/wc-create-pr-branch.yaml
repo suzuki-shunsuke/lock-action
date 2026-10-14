@@ -4,10 +4,14 @@ run-name: wc-create-pr-branch (${{inputs.pr}})
 on:
   workflow_call:
     inputs:
-      pr:
-        description: "Pull Request Number"
+      version:
+        description: A released version. One of `pr/<pr number>`, `latest`, or tag vX.Y.Z.
         required: true
-        type: number
+        type: string
+      pr:
+        description: Pull Request Number
+        required: false
+        type: string
       is_comment:
         description: If the comment is posted
         required: false
@@ -83,5 +87,6 @@ jobs:
       - if: ${{ !github.event.pull_request.head.repo.fork }}
         uses: suzuki-shunsuke/release-js-action@ff106e3a3f5b34f174a23db3110031fbf463f15c # v0.2.1
         with:
-          version: pr/${{inputs.pr}}
+          version: ${{inputs.version}}
+          pr: ${{inputs.pr}}
           is_comment: ${{inputs.is_comment}}

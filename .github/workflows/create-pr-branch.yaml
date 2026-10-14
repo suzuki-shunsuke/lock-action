@@ -21,5 +21,6 @@ jobs:
       pull-requests: write
       id-token: write
     with:
-      pr: ${{fromJSON(inputs.pr)}}
+      version: pr/${{inputs.pr}}
+      pr: ${{inputs.pr}}
       is_comment: ${{inputs.is_comment}}
