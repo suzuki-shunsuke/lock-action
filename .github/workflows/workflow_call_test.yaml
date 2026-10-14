@@ -14,6 +14,7 @@ jobs:
     secrets:
       TAKUMI_GUARD_BOT_ID: ${{secrets.TAKUMI_GUARD_BOT_ID}}
     with:
+      version: pr/${{github.event.pull_request.number}}
       pr: ${{github.event.pull_request.number}}
 
   test:
