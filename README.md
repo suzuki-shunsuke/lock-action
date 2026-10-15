@@ -140,7 +140,7 @@ lock:
   outputs:
     locked: ${{steps.lock.outputs.locked}}
   steps:
-    - uses: suzuki-shunsuke/lock-action@c752be910ac812e0adc50316855416514d364b57 # v0.1.3
+    - uses: suzuki-shunsuke/lock-action@4a69996f86294a4eacc7450392eb70804b6543c4 # v0.2.0
       id: lock
       with:
         mode: lock
@@ -153,7 +153,7 @@ unlock:
   permissions:
     contents: write
   steps:
-    - uses: suzuki-shunsuke/lock-action@c752be910ac812e0adc50316855416514d364b57 # v0.1.3
+    - uses: suzuki-shunsuke/lock-action@4a69996f86294a4eacc7450392eb70804b6543c4 # v0.2.0
       if: needs.lock.outputs.locked == 'true'
       with:
         mode: unlock
@@ -191,7 +191,7 @@ The following versions are available.
 1. [Release versions](https://github.com/suzuki-shunsuke/lock-action/releases)
 
 ```yaml
-uses: suzuki-shunsuke/lock-action@v0.1.1
+uses: suzuki-shunsuke/lock-action@4a69996f86294a4eacc7450392eb70804b6543c4 # v0.2.0
 ```
 
 2. [Pull Request versions](https://github.com/suzuki-shunsuke/lock-action/branches/all?query=pr%2F&lastTab=overview): These versions are removed when we feel unnecessary. These versions are used to test pull requests.
